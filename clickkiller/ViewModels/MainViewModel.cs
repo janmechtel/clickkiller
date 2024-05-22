@@ -1,4 +1,4 @@
-﻿namespace xplatsample.ViewModels;
+﻿namespace clickkiller.ViewModels;
 
 public class MainViewModel : ViewModelBase
 {

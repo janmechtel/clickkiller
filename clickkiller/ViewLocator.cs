@@ -1,9 +1,9 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using xplatsample.ViewModels;
+using clickkiller.ViewModels;
 
-namespace xplatsample;
+namespace clickkiller;
 
 public class ViewLocator : IDataTemplate
 {

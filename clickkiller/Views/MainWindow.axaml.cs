@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace xplatsample.Views;
+namespace clickkiller.Views;
 
 public partial class MainWindow : Window
 {

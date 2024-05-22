@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using xplatsample.ViewModels;
-using xplatsample.Views;
+using clickkiller.ViewModels;
+using clickkiller.Views;
 
-namespace xplatsample;
+namespace clickkiller;
 
 public partial class App : Application
 {

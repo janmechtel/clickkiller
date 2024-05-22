@@ -1,6 +1,6 @@
 ﻿using ReactiveUI;
 
-namespace xplatsample.ViewModels;
+namespace clickkiller.ViewModels;
 
 public class ViewModelBase : ReactiveObject
 {

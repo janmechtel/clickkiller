@@ -2,7 +2,7 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 
-namespace xplatsample.Windows;
+namespace clickkiller.Windows;
 
 sealed class Program
 {
