@@ -2,7 +2,7 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
 
-namespace xplatsample.Desktop;
+namespace xplatsample.Windows;
 
 sealed class Program
 {
