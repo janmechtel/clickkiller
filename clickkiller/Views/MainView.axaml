@@ -12,5 +12,6 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <Button Content="{Binding ButtonContent}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+  <Button Content="{Binding ButtonContent}" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OnButtonClick"/>
 </UserControl>
+
