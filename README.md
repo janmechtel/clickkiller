@@ -38,4 +38,10 @@ Click Killer provides a fast way to get the nuisance out of your head and sidest
 - Why did you launch this project?
     - I love automation and helping people being more productive. 
     - I want my clients & friends to have a faster way to reach out with their problems 💚
-    
+
+
+# Test
+
+dotnet build
+dotnet run
+dotnet publish --runtime win-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true`
