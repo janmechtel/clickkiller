@@ -4,7 +4,6 @@ using Avalonia.Markup.Xaml;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
 using System.Diagnostics;
 using System;
 using Avalonia.Platform;
@@ -24,11 +23,6 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainViewModel()
-            };
-
             _trayIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://clickkiller/Assets/clickkiller.ico")));
             var trayIcon = new TrayIcon
             {
