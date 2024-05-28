@@ -29,7 +29,7 @@ public partial class App : Application
                 DataContext = new MainViewModel()
             };
 
-            _trayIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://clickkiller/Assets/avalonia-logo.ico")));
+            _trayIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://clickkiller/Assets/clickkiller.ico")));
             var trayIcon = new TrayIcon
             {
                 Icon = _trayIcon,

@@ -6,7 +6,7 @@
         xmlns:views="clr-namespace:clickkiller.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="clickkiller.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/clickkiller.ico"
         Title="clickkiller">
         <views:MainView />
 </Window>
