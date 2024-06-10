@@ -45,7 +45,12 @@ public partial class App : Application
 
     private void OnTrayIconClicked(object? sender, EventArgs e)
     {
-        var url = "https://clickkiller.com/";
+        TriggerReport();
+    }
+
+    public static void TriggerReport()
+    {
+        var url = "https://clickkiller.com/ideas/";
         var psi = new ProcessStartInfo
         {
             FileName = url,
@@ -53,4 +58,5 @@ public partial class App : Application
         };
         Process.Start(psi);
     }
+
 }

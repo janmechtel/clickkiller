@@ -13,12 +13,6 @@ public partial class MainView : UserControl
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
-        var url = "https://clickkiller.com/";
-        var psi = new ProcessStartInfo
-        {
-            FileName = url,
-            UseShellExecute = true
-        };
-        Process.Start(psi);
+        App.TriggerReport();
     }
 }
