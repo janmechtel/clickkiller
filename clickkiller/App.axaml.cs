@@ -7,6 +7,8 @@ using Avalonia.Controls;
 using System.Diagnostics;
 using System;
 using Avalonia.Platform;
+using SharpHook;
+using SharpHook.Native;
 
 namespace clickkiller;
 
@@ -18,6 +20,16 @@ public partial class App : Application
     {
         AvaloniaXamlLoader.Load(this);
     }
+
+    private void OnKeyReleased(object sender, KeyboardHookEventArgs e)
+    {
+        // Global Shortcut for Ctrl+Shift+Q
+        if (e.Data.RawCode == 24 && e.RawEvent.Mask.HasCtrl()&& e.RawEvent.Mask.HasShift())
+        {
+            TriggerReport();
+        }
+    }
+
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -40,7 +52,18 @@ public partial class App : Application
             };
         }
 
+        RegisterHook();
+
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private async void RegisterHook() {
+        var hook = new TaskPoolGlobalHook();
+
+        hook.KeyReleased += OnKeyReleased;           // EventHandler<KeyboardHookEventArgs>
+
+        await hook.RunAsync();
+
     }
 
     private void OnTrayIconClicked(object? sender, EventArgs e)
