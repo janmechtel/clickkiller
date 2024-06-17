@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using System.Diagnostics;
 using System;
 using Avalonia.Platform;
@@ -45,6 +46,15 @@ public partial class App : Application
                 IsVisible = true
             };
             trayIcon.Clicked += OnTrayIconClicked;
+
+            var contextMenu = new NativeMenu();
+            var exitMenuItem = new NativeMenuItem("Exit");
+            exitMenuItem.Click += (sender, args) => 
+            {
+                Environment.Exit(0);
+            };
+            contextMenu.Items.Add(exitMenuItem);
+            trayIcon.Menu = contextMenu;
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
