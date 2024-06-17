@@ -9,6 +9,8 @@ using System;
 using Avalonia.Platform;
 using SharpHook;
 using SharpHook.Native;
+using System.Runtime.InteropServices;
+using System.IO;
 
 namespace clickkiller;
 
@@ -71,15 +73,38 @@ public partial class App : Application
         TriggerReport();
     }
 
-    public static void TriggerReport()
+public static void TriggerReport()
+{
+    string? homeDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+        ? Environment.GetEnvironmentVariable("USERPROFILE")
+        : Environment.GetEnvironmentVariable("HOME");
+
+    string filePath = Path.Combine(homeDirectory, "reports.txt");
+
+    if (!File.Exists(filePath))
     {
-        var url = "https://clickkiller.com/ideas/";
-        var psi = new ProcessStartInfo
-        {
-            FileName = url,
-            UseShellExecute = true
-        };
-        Process.Start(psi);
+        File.Create(filePath).Dispose();
     }
 
+    string formattedDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+    // Read the existing content of the file
+    string fileContent = File.ReadAllText(filePath);
+
+    // Prepend the formatted date and time to the existing content
+    fileContent = formattedDateTime + Environment.NewLine + fileContent;
+
+    // Write the updated content back to the file
+    File.WriteAllText(filePath, fileContent);
+
+    var psi2 = new ProcessStartInfo
+    {
+        FileName = "code",
+        Arguments = filePath,
+        UseShellExecute = true
+    };
+    Process.Start(psi2);
 }
+
+}
+
