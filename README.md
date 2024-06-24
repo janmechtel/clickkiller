@@ -78,3 +78,9 @@ WHY?
 > creates a dialog, a stream of annoyances
 > it's a basis from where i can offer more things / experiment
 > I can sollicit feedack
+
+# Roadmap
+
+- [ ] Simple Backend
+- [ ] Frontend
+- [ ] Installer 

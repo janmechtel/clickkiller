@@ -1,21 +1,12 @@
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Interactivity;
 
-namespace clickkiller.Views;
-
-public partial class MainView : UserControl
+namespace clickkiller.Views
 {
-    public MainView()
+    public partial class MainView : UserControl
     {
-        InitializeComponent();
-    }
-
-    private void OnButtonClick(object? sender, RoutedEventArgs e)
-    {
-        if (Application.Current is App app)
+        public MainView()
         {
-            app.TriggerReport();
+            InitializeComponent();
         }
     }
 }

@@ -1,25 +1,59 @@
-﻿namespace clickkiller.ViewModels;
-
+﻿using System;
 using System.Collections.ObjectModel;
+using System.Windows.Input;
+using ReactiveUI;
+using clickkiller.Data;
 
-public class MainViewModel : ViewModelBase
+namespace clickkiller.ViewModels
 {
-    private ObservableCollection<string> _suggestions;
-
-    public MainViewModel()
+    public class MainViewModel : ViewModelBase
     {
-        _suggestions = new ObservableCollection<string>
+        private readonly DatabaseService _databaseService;
+        private string _application;
+        private string _notes;
+        private ObservableCollection<Issue> _issues;
+
+        public MainViewModel()
         {
-            "Suggestion1",
-            "Suggestion2",
-            "Suggestion3"
-        };
-    }
+            _databaseService = new DatabaseService();
+            SaveCommand = ReactiveCommand.Create(SaveIssue);
+            RefreshIssues();
+        }
 
-    public ObservableCollection<string> Suggestions
-    {
-        get => _suggestions;
-    }
+        public string Application
+        {
+            get => _application;
+            set => this.RaiseAndSetIfChanged(ref _application, value);
+        }
 
-    public static string ButtonContent => "Report Problem";
+        public string Notes
+        {
+            get => _notes;
+            set => this.RaiseAndSetIfChanged(ref _notes, value);
+        }
+
+        public ObservableCollection<Issue> Issues
+        {
+            get => _issues;
+            private set => this.RaiseAndSetIfChanged(ref _issues, value);
+        }
+
+        public ICommand SaveCommand { get; }
+
+        private void SaveIssue()
+        {
+            if (!string.IsNullOrWhiteSpace(Application) && !string.IsNullOrWhiteSpace(Notes))
+            {
+                _databaseService.SaveIssue(Application, Notes);
+                Application = string.Empty;
+                Notes = string.Empty;
+                RefreshIssues();
+            }
+        }
+
+        private void RefreshIssues()
+        {
+            Issues = new ObservableCollection<Issue>(_databaseService.GetAllIssues());
+        }
+    }
 }
