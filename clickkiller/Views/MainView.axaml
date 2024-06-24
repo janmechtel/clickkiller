@@ -12,6 +12,9 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <Button Content="{Binding ButtonContent}" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OnButtonClick"/>
+  <StackPanel>
+    <Button Content="{Binding ButtonContent}" HorizontalAlignment="Center" VerticalAlignment="Center" Click="OnButtonClick"/>
+    <AutoCompleteBox Width="200" ItemsSource="{Binding Suggestions}" />
+  </StackPanel>
 </UserControl>
 

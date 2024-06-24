@@ -56,8 +56,11 @@ public partial class App : Application
             contextMenu.Items.Add(exitMenuItem);
             trayIcon.Menu = contextMenu;
 
-            _mainWindow = new MainWindow();
-            desktop.MainWindow = _mainWindow;  
+            _mainWindow = new MainWindow
+            {
+                DataContext = new MainViewModel()
+            };
+            desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
 
         }

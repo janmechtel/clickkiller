@@ -1,8 +1,25 @@
 ﻿namespace clickkiller.ViewModels;
 
+using System.Collections.ObjectModel;
+
 public class MainViewModel : ViewModelBase
 {
-#pragma warning disable CA1822 // Mark members as static
-    public string ButtonContent => "Report Problem";
-#pragma warning restore CA1822 // Mark members as static
+    private ObservableCollection<string> _suggestions;
+
+    public MainViewModel()
+    {
+        _suggestions = new ObservableCollection<string>
+        {
+            "Suggestion1",
+            "Suggestion2",
+            "Suggestion3"
+        };
+    }
+
+    public ObservableCollection<string> Suggestions
+    {
+        get => _suggestions;
+    }
+
+    public static string ButtonContent => "Report Problem";
 }
