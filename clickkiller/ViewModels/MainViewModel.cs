@@ -13,11 +13,20 @@ namespace clickkiller.ViewModels
         private string _notes;
         private ObservableCollection<Issue> _issues;
 
+        private bool _focusNotes;
+
         public MainViewModel()
         {
             _databaseService = new DatabaseService();
             SaveCommand = ReactiveCommand.Create(SaveIssue);
+            FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             RefreshIssues();
+        }
+
+        public bool FocusNotes
+        {
+            get => _focusNotes;
+            set => this.RaiseAndSetIfChanged(ref _focusNotes, value);
         }
 
         public string Application
@@ -39,6 +48,7 @@ namespace clickkiller.ViewModels
         }
 
         public ICommand SaveCommand { get; }
+        public ICommand FocusNotesCommand { get; }
 
         private void SaveIssue()
         {
