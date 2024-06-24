@@ -7,6 +7,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="clickkiller.Views.MainWindow"
         Icon="/Assets/clickkiller.ico"
-        Title="clickkiller">
+        Title="clickkiller"
+        SizeToContent="WidthAndHeight">
         <views:MainView />
 </Window>
