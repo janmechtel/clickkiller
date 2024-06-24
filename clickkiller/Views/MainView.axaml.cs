@@ -1,6 +1,6 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
-using System.Diagnostics;
 
 namespace clickkiller.Views;
 
@@ -13,6 +13,9 @@ public partial class MainView : UserControl
 
     private void OnButtonClick(object? sender, RoutedEventArgs e)
     {
-        App.TriggerReport();
+        if (Application.Current is App app)
+        {
+            app.TriggerReport();
+        }
     }
 }

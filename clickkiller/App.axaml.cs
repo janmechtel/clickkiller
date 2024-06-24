@@ -4,7 +4,6 @@ using Avalonia.Markup.Xaml;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
 using System.Diagnostics;
 using System;
 using Avalonia.Platform;
@@ -12,12 +11,14 @@ using SharpHook;
 using SharpHook.Native;
 using System.Runtime.InteropServices;
 using System.IO;
+using Avalonia.Threading;
 
 namespace clickkiller;
 
 public partial class App : Application
 {
     private WindowIcon? _trayIcon;
+    private MainWindow? _mainWindow;
 
     public override void Initialize()
     {
@@ -32,7 +33,6 @@ public partial class App : Application
             TriggerReport();
         }
     }
-
 
     public override void OnFrameworkInitializationCompleted()
     {
@@ -55,6 +55,11 @@ public partial class App : Application
             };
             contextMenu.Items.Add(exitMenuItem);
             trayIcon.Menu = contextMenu;
+
+            _mainWindow = new MainWindow();
+            desktop.MainWindow = _mainWindow;  
+            _mainWindow.Hide();
+
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
@@ -83,38 +88,46 @@ public partial class App : Application
         TriggerReport();
     }
 
-public static void TriggerReport()
-{
-    string? homeDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-        ? Environment.GetEnvironmentVariable("USERPROFILE")
-        : Environment.GetEnvironmentVariable("HOME");
-
-    string filePath = Path.Combine(homeDirectory, "reports.txt");
-
-    if (!File.Exists(filePath))
+    public void TriggerReport()
     {
-        File.Create(filePath).Dispose();
+        string? homeDirectory = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            ? Environment.GetEnvironmentVariable("USERPROFILE")
+            : Environment.GetEnvironmentVariable("HOME");
+
+        string filePath = Path.Combine(homeDirectory, "reports.txt");
+
+        if (!File.Exists(filePath))
+        {
+            File.Create(filePath).Dispose();
+        }
+
+        string formattedDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+        // Read the existing content of the file
+        string fileContent = File.ReadAllText(filePath);
+
+        // Prepend the formatted date and time to the existing content
+        fileContent = formattedDateTime + Environment.NewLine + fileContent;
+
+        // Write the updated content back to the file
+        File.WriteAllText(filePath, fileContent);
+
+        var psi2 = new ProcessStartInfo
+        {
+            FileName = "code",
+            Arguments = filePath,
+            UseShellExecute = true
+        };
+        Process.Start(psi2);
+
+        if (_mainWindow != null)
+        {
+          Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                _mainWindow.Show();
+                _mainWindow.Activate();
+            });
+        }
     }
-
-    string formattedDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-
-    // Read the existing content of the file
-    string fileContent = File.ReadAllText(filePath);
-
-    // Prepend the formatted date and time to the existing content
-    fileContent = formattedDateTime + Environment.NewLine + fileContent;
-
-    // Write the updated content back to the file
-    File.WriteAllText(filePath, fileContent);
-
-    var psi2 = new ProcessStartInfo
-    {
-        FileName = "code",
-        Arguments = filePath,
-        UseShellExecute = true
-    };
-    Process.Start(psi2);
-}
-
 }
 
