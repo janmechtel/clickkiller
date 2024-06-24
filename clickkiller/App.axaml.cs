@@ -26,8 +26,8 @@ public partial class App : Application
 
     private void OnKeyReleased(object sender, KeyboardHookEventArgs e)
     {
-        // Global Shortcut for Ctrl+Shift+Q
-        if (e.Data.RawCode == 24 && e.RawEvent.Mask.HasCtrl()&& e.RawEvent.Mask.HasShift())
+        // Global Shortcut for F1
+        if (e.Data.KeyCode == KeyCode.VcF1)
         {
             TriggerReport();
         }

@@ -47,9 +47,7 @@ dotnet run
 dotnet publish --runtime win-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true`
 dotnet publish -c Release -r linux-x64 --self-contained
 
-
 # Background
-
 
 I want to build a software tool that is useful to the productivity crowd think management consultants, software developers, product owner etc. People who would also enjoy ProductHunt. Keyboard shortcuts and so on.
 
