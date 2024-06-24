@@ -24,11 +24,19 @@
       </TextBox>
       <Button Content="Save Issue" Command="{Binding SaveCommand}" HorizontalAlignment="Left"/>
     </StackPanel>
-    <DataGrid Grid.Row="1" ItemsSource="{Binding Issues}" AutoGenerateColumns="False" IsReadOnly="True">
+    <DataGrid Name="IssuesDataGrid" Grid.Row="1" ItemsSource="{Binding Issues}" AutoGenerateColumns="False" IsReadOnly="True">
       <DataGrid.Columns>
         <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
         <DataGridTextColumn Header="Application" Binding="{Binding Application}" />
         <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" />
+        <DataGridTemplateColumn Header="Actions">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Button Content="x" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
+                      CommandParameter="{Binding}" Width="20" Height="20" />
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
       </DataGrid.Columns>
     </DataGrid>
   </Grid>

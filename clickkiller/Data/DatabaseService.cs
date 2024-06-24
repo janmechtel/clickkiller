@@ -81,5 +81,17 @@ namespace clickkiller.Data
 
             return issues;
         }
+
+        public void DeleteIssue(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = "DELETE FROM Issues WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", id);
+
+            command.ExecuteNonQuery();
+        }
     }
 }

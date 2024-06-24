@@ -20,6 +20,7 @@ namespace clickkiller.ViewModels
             _databaseService = new DatabaseService();
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
+            DeleteIssueCommand = ReactiveCommand.Create<Issue>(DeleteIssue);
             RefreshIssues();
         }
 
@@ -49,6 +50,7 @@ namespace clickkiller.ViewModels
 
         public ICommand SaveCommand { get; }
         public ICommand FocusNotesCommand { get; }
+        public ICommand DeleteIssueCommand { get; }
 
         private void SaveIssue()
         {
@@ -64,6 +66,12 @@ namespace clickkiller.ViewModels
         private void RefreshIssues()
         {
             Issues = new ObservableCollection<Issue>(_databaseService.GetAllIssues());
+        }
+
+        private void DeleteIssue(Issue issue)
+        {
+            _databaseService.DeleteIssue(issue.Id);
+            RefreshIssues();
         }
     }
 }
