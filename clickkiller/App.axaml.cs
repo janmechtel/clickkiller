@@ -98,11 +98,10 @@ public partial class App : Application
         {
           Dispatcher.UIThread.InvokeAsync(() =>
             {
+                if (_mainWindow.IsVisible) {
+                    _mainWindow.Hide();
+                }
                 _mainWindow.Show();
-                _mainWindow.Activate();
-                _mainWindow.Topmost = true;
-                _mainWindow.Topmost = false;
-                _mainWindow.Focus();
             });
         }
     }
