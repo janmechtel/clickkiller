@@ -9,5 +9,7 @@
         Icon="/Assets/clickkiller.ico"
         Title="clickkiller"
         SizeToContent="WidthAndHeight">
-        <views:MainView />
+    <Grid>
+        <views:MainView HorizontalAlignment="Center" VerticalAlignment="Center" />
+    </Grid>
 </Window>
