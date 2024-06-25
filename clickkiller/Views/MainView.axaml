@@ -12,12 +12,12 @@
 
   <Grid RowDefinitions="Auto,*">
     <StackPanel Grid.Row="0" Margin="10">
-      <TextBox Text="{Binding Application}" Watermark="Application" Margin="0,0,0,10">
+      <TextBox Name="ApplicationTextBox" Text="{Binding Application}" Watermark="Application" Margin="0,0,0,10">
         <TextBox.KeyBindings>
           <KeyBinding Gesture="Enter" Command="{Binding FocusNotesCommand}" />
         </TextBox.KeyBindings>
       </TextBox>
-      <TextBox Text="{Binding Notes}" Watermark="Notes" Height="100" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,10">
+      <TextBox Name="NotesTextBox" Text="{Binding Notes}" Watermark="Notes" Height="100" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,10">
         <TextBox.KeyBindings>
           <KeyBinding Gesture="Ctrl+Enter" Command="{Binding SaveCommand}" />
         </TextBox.KeyBindings>
