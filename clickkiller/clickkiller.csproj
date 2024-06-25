@@ -21,4 +21,13 @@
     <PackageReference Include="SharpHook.Reactive" Version="5.3.6" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="**\*.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="**\*.xaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>

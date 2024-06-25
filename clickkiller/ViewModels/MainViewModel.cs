@@ -22,6 +22,7 @@ namespace clickkiller.ViewModels
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
+            MarkIssueAsDoneCommand = ReactiveCommand.Create<IssueViewModel>(MarkIssueAsDone);
             RefreshIssues();
         }
 
@@ -52,6 +53,7 @@ namespace clickkiller.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand FocusNotesCommand { get; }
         public ICommand DeleteIssueCommand { get; }
+        public ICommand MarkIssueAsDoneCommand { get; }
 
         private void SaveIssue()
         {
@@ -85,6 +87,12 @@ namespace clickkiller.ViewModels
             _databaseService.DeleteIssue(issueViewModel.Id);
             RefreshIssues();
         }
+
+        private void MarkIssueAsDone(IssueViewModel issueViewModel)
+        {
+            _databaseService.MarkIssueAsDone(issueViewModel.Id);
+            RefreshIssues();
+        }
     }
 
     public class IssueViewModel : ViewModelBase
@@ -94,6 +102,7 @@ namespace clickkiller.ViewModels
         public string Application { get; }
         public string Notes { get; }
         public bool ShowDate { get; }
+        public bool IsDone { get; }
 
         public IssueViewModel(Issue issue, bool showDate)
         {
@@ -102,6 +111,7 @@ namespace clickkiller.ViewModels
             Application = issue.Application;
             Notes = issue.Notes;
             ShowDate = showDate;
+            IsDone = issue.IsDone;
         }
     }
 }

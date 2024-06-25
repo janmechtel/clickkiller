@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:clickkiller.ViewModels"
+             xmlns:converters="clr-namespace:clickkiller.Converters"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="clickkiller.Views.MainView"
              x:DataType="vm:MainViewModel">
@@ -40,13 +41,43 @@
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
-        <DataGridTextColumn Header="Application" Binding="{Binding Application}" />
-        <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" />
+        <DataGridTemplateColumn Header="Application">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Application}">
+                <TextBlock.Styles>
+                  <Style Selector="TextBlock">
+                    <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
+                    <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
+                  </Style>
+                </TextBlock.Styles>
+              </TextBlock>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
+        <DataGridTemplateColumn Header="Notes">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding Notes}">
+                <TextBlock.Styles>
+                  <Style Selector="TextBlock">
+                    <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
+                    <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
+                  </Style>
+                </TextBlock.Styles>
+              </TextBlock>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Actions">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <Button Content="x" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
-                      CommandParameter="{Binding}" Width="20" Height="20" />
+              <StackPanel Orientation="Horizontal">
+                <Button Content="✓" Command="{Binding ((vm:MainViewModel)DataContext).MarkIssueAsDoneCommand, ElementName=IssuesDataGrid}" 
+                        CommandParameter="{Binding}" Width="20" Height="20" Margin="0,0,5,0" />
+                <Button Content="x" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
+                        CommandParameter="{Binding}" Width="20" Height="20" />
+              </StackPanel>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>

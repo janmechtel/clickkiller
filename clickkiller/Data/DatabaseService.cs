@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Data.Sqlite;
+using clickkiller.Data.Migrations;
 
 namespace clickkiller.Data
 {
@@ -10,11 +12,13 @@ namespace clickkiller.Data
         public DateTime Timestamp { get; set; }
         public string Application { get; set; }
         public string Notes { get; set; }
+        public bool IsDone { get; set; }
     }
 
     public class DatabaseService
     {
         private const string ConnectionString = "Data Source=issues.db";
+        private const int CurrentVersion = 1;
 
         public DatabaseService()
         {
@@ -26,16 +30,66 @@ namespace clickkiller.Data
             using var connection = new SqliteConnection(ConnectionString);
             connection.Open();
 
+            CreateVersionTableIfNotExists(connection);
+            int currentVersion = GetCurrentVersion(connection);
+
+            if (currentVersion < CurrentVersion)
+            {
+                ApplyMigrations(connection, currentVersion);
+            }
+        }
+
+        private void CreateVersionTableIfNotExists(SqliteConnection connection)
+        {
             var command = connection.CreateCommand();
             command.CommandText =
             @"
-                CREATE TABLE IF NOT EXISTS Issues (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Timestamp TEXT NOT NULL,
-                    Application TEXT NOT NULL,
-                    Notes TEXT NOT NULL
+                CREATE TABLE IF NOT EXISTS DatabaseVersion (
+                    Version INTEGER NOT NULL
                 )
             ";
+            command.ExecuteNonQuery();
+        }
+
+        private int GetCurrentVersion(SqliteConnection connection)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT Version FROM DatabaseVersion";
+            var result = command.ExecuteScalar();
+
+            if (result != null)
+            {
+                return Convert.ToInt32(result);
+            }
+
+            // If no version found, assume it's a new database
+            command.CommandText = "INSERT INTO DatabaseVersion (Version) VALUES (0)";
+            command.ExecuteNonQuery();
+            return 0;
+        }
+
+        private void ApplyMigrations(SqliteConnection connection, int currentVersion)
+        {
+            var migrations = new List<IMigration>
+            {
+                new AddIsDoneColumnMigration()
+            };
+
+            foreach (var migration in migrations.OrderBy(m => m.Version))
+            {
+                if (migration.Version > currentVersion)
+                {
+                    migration.Up(connection);
+                    UpdateDatabaseVersion(connection, migration.Version);
+                }
+            }
+        }
+
+        private void UpdateDatabaseVersion(SqliteConnection connection, int version)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "UPDATE DatabaseVersion SET Version = $version";
+            command.Parameters.AddWithValue("$version", version);
             command.ExecuteNonQuery();
         }
 
@@ -47,12 +101,13 @@ namespace clickkiller.Data
             var command = connection.CreateCommand();
             command.CommandText =
             @"
-                INSERT INTO Issues (Timestamp, Application, Notes)
-                VALUES ($timestamp, $application, $notes)
+                INSERT INTO Issues (Timestamp, Application, Notes, IsDone)
+                VALUES ($timestamp, $application, $notes, $isDone)
             ";
             command.Parameters.AddWithValue("$timestamp", DateTime.Now.ToString("o"));
             command.Parameters.AddWithValue("$application", application);
             command.Parameters.AddWithValue("$notes", notes);
+            command.Parameters.AddWithValue("$isDone", 0);
 
             command.ExecuteNonQuery();
         }
@@ -65,7 +120,7 @@ namespace clickkiller.Data
             connection.Open();
 
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Timestamp, Application, Notes FROM Issues ORDER BY Timestamp DESC";
+            command.CommandText = "SELECT Id, Timestamp, Application, Notes, IsDone FROM Issues ORDER BY Timestamp DESC";
 
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -75,7 +130,8 @@ namespace clickkiller.Data
                     Id = reader.GetInt32(0),
                     Timestamp = DateTime.Parse(reader.GetString(1)),
                     Application = reader.GetString(2),
-                    Notes = reader.GetString(3)
+                    Notes = reader.GetString(3),
+                    IsDone = reader.GetInt32(4) != 0
                 });
             }
 
@@ -89,6 +145,18 @@ namespace clickkiller.Data
 
             var command = connection.CreateCommand();
             command.CommandText = "DELETE FROM Issues WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", id);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void MarkIssueAsDone(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = "UPDATE Issues SET IsDone = 1 WHERE Id = $id";
             command.Parameters.AddWithValue("$id", id);
 
             command.ExecuteNonQuery();
