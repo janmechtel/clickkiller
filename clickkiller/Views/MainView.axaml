@@ -10,7 +10,7 @@
     <vm:MainViewModel />
   </Design.DataContext>
 
-  <Grid RowDefinitions="Auto,*">
+  <Grid RowDefinitions="200,400">
     <StackPanel Grid.Row="0" Margin="10">
       <TextBox Name="ApplicationTextBox" Text="{Binding Application}" Watermark="Application" Margin="0,0,0,10">
         <TextBox.KeyBindings>
@@ -26,7 +26,20 @@
     </StackPanel>
     <DataGrid Name="IssuesDataGrid" Grid.Row="1" ItemsSource="{Binding Issues}" AutoGenerateColumns="False" IsReadOnly="True">
       <DataGrid.Columns>
-        <DataGridTextColumn Header="Timestamp" Binding="{Binding Timestamp}" />
+        <DataGridTemplateColumn Header="Timestamp">
+          <DataGridTemplateColumn.CellTemplate>
+            <DataTemplate>
+              <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                  <TextBlock Text="{Binding Timestamp, StringFormat={}{0:yyyy-MM-dd}}" 
+                             IsVisible="{Binding ShowDate}"/>
+                  <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" 
+                             Margin="5,0,0,0"/>
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </DataGridTemplateColumn.CellTemplate>
+        </DataGridTemplateColumn>
         <DataGridTextColumn Header="Application" Binding="{Binding Application}" />
         <DataGridTextColumn Header="Notes" Binding="{Binding Notes}" />
         <DataGridTemplateColumn Header="Actions">
