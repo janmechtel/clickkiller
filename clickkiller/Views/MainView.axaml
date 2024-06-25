@@ -30,12 +30,12 @@
         <DataGridTemplateColumn Header="Timestamp">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <Grid>
+              <Grid Margin="5,0,5,0">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                   <TextBlock Text="{Binding Timestamp, StringFormat={}{0:yyyy-MM-dd}}" 
                              IsVisible="{Binding ShowDate}"/>
                   <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" 
-                             Margin="5,0,0,0"/>
+                             />
                 </StackPanel>
               </Grid>
             </DataTemplate>
@@ -44,35 +44,37 @@
         <DataGridTemplateColumn Header="Application">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Application}">
-                <TextBlock.Styles>
-                  <Style Selector="TextBlock">
-                    <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
-                    <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
-                  </Style>
-                </TextBlock.Styles>
-              </TextBlock>
+                <TextBlock Text="{Binding Application}" VerticalAlignment="Center" Margin="5,0,5,0">
+                  <TextBlock.Styles>
+                    <Style Selector="TextBlock">
+                      <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
+                      <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
+                    </Style>
+                  </TextBlock.Styles>
+                </TextBlock>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Notes">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <TextBlock Text="{Binding Notes}">
-                <TextBlock.Styles>
-                  <Style Selector="TextBlock">
-                    <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
-                    <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
-                  </Style>
-                </TextBlock.Styles>
-              </TextBlock>
+              <Grid>
+                <TextBlock Text="{Binding Notes}" VerticalAlignment="Center" Margin="5,0,5,0">
+                  <TextBlock.Styles>
+                    <Style Selector="TextBlock">
+                      <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
+                      <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
+                    </Style>
+                  </TextBlock.Styles>
+                </TextBlock>
+              </Grid>
             </DataTemplate>
           </DataGridTemplateColumn.CellTemplate>
         </DataGridTemplateColumn>
         <DataGridTemplateColumn Header="Actions">
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
-              <StackPanel Orientation="Horizontal">
+              <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
                 <Button Content="✓" Command="{Binding ((vm:MainViewModel)DataContext).MarkIssueAsDoneCommand, ElementName=IssuesDataGrid}" 
                         CommandParameter="{Binding}" Width="20" Height="20" Margin="0,0,5,0" />
                 <Button Content="x" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
