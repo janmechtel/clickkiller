@@ -25,7 +25,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void OnKeyReleased(object sender, KeyboardHookEventArgs e)
+    private void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
     {
         // Global Shortcut for F1
         if (e.Data.KeyCode == KeyCode.VcF1)

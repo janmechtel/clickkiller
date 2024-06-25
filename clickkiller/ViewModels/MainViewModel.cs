@@ -10,9 +10,9 @@ namespace clickkiller.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly DatabaseService _databaseService;
-        private string _application;
-        private string _notes;
-        private ObservableCollection<IssueViewModel> _issues;
+        private string _application = string.Empty;
+        private string _notes = string.Empty;
+        private ObservableCollection<IssueViewModel> _issues = [];
 
         private bool _focusNotes;
 

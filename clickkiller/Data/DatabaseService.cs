@@ -10,8 +10,8 @@ namespace clickkiller.Data
     {
         public int Id { get; set; }
         public DateTime Timestamp { get; set; }
-        public string Application { get; set; }
-        public string Notes { get; set; }
+        public required string Application { get; set; }
+        public required string Notes { get; set; }
         public bool IsDone { get; set; }
     }
 

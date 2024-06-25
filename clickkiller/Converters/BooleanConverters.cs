@@ -9,12 +9,12 @@ namespace clickkiller.Converters
     {
         public static readonly BooleanToTextDecorationConverter Instance = new BooleanToTextDecorationConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return (bool)value ? TextDecorations.Strikethrough : null;
+            return value is bool boolValue && boolValue ? TextDecorations.Strikethrough : null;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -24,12 +24,12 @@ namespace clickkiller.Converters
     {
         public static readonly BooleanToOpacityConverter Instance = new BooleanToOpacityConverter();
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            return (bool)value ? 0.5 : 1.0;
+            return value is bool boolValue && boolValue ? 0.5 : 1.0;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
