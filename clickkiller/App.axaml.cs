@@ -12,6 +12,7 @@ using Avalonia.Threading;
 using System.Threading.Tasks;
 using Velopack;
 using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace clickkiller;
 
@@ -20,11 +21,18 @@ public partial class App : Application
     public static MemoryLogger? Log { get; private set; } = new MemoryLogger();
     private WindowIcon? _trayIcon;
     private MainWindow? _mainWindow;
+    private static FileStream? _lockFile;
+    private static readonly string _appDataPath = GetAppPath();
 
     public override void Initialize()
     {
-        Task.Run(UpdateApp).Wait();
-        AvaloniaXamlLoader.Load(this);
+        if (IsNotRunning()) {
+            Task.Run(UpdateApp).Wait();
+            AvaloniaXamlLoader.Load(this);
+        } else {
+            Log?.LogError("Exiting now because the app is probably already running.");
+            Environment.Exit(0);
+        }
     }
 
     private void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
@@ -68,18 +76,15 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = new MainViewModel(_appDataPath)
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
 
         }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
+        else
         {
-            singleViewPlatform.MainView = new MainView
-            {
-                DataContext = new MainViewModel()
-            };
+            throw new NotImplementedException();
         }
 
         RegisterHook();
@@ -143,6 +148,55 @@ public partial class App : Application
         {
             Log?.LogError(ex.Message);
         }
+    }
+
+    private static bool IsNotRunning()
+    {
+
+        if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows())
+        {
+            string lockFilePath = Path.Combine(_appDataPath, ".lock");
+            try
+            {
+                // check platform to be linux or windows
+                _lockFile = File.Open(lockFilePath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                _lockFile.Lock(0, 0);
+                return true;
+            }
+            catch
+            {
+                Log?.LogError("Could not lock file {lockFilePath}.", lockFilePath);
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private static string GetAppPath()
+    {
+        if (IsDebugMode())
+        {
+            return AppDomain.CurrentDomain.BaseDirectory;
+        }
+        else
+        {
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string appFolder = "clickkiller";
+            string fullPath = Path.Combine(appDataPath, appFolder);
+            Directory.CreateDirectory(fullPath);
+            return fullPath;
+        }
+    }
+    private static bool IsDebugMode()
+    {
+#if DEBUG
+        return true;
+#else
+        return false;
+#endif
     }
 
 }

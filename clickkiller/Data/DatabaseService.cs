@@ -21,36 +21,11 @@ namespace clickkiller.Data
         private readonly string ConnectionString;
         private const int CurrentVersion = 1;
 
-        public DatabaseService()
+        public DatabaseService(string appDataPath)
         {
-            ConnectionString = $"Data Source={GetDatabasePath()}";
+            
+            ConnectionString = $"Data Source={Path.Combine(appDataPath, "issues.db")}";
             InitializeDatabase();
-        }
-
-        private string GetDatabasePath()
-        {
-            string fileName = "issues.db";
-            if (IsDebugMode())
-            {
-                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
-            }
-            else
-            {
-                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                string appFolder = "clickkiller";
-                string fullPath = Path.Combine(appDataPath, appFolder);
-                Directory.CreateDirectory(fullPath);
-                return Path.Combine(fullPath, fileName);
-            }
-        }
-
-        private bool IsDebugMode()
-        {
-            #if DEBUG
-                return true;
-            #else
-                return false;
-            #endif
         }
 
         private void InitializeDatabase()

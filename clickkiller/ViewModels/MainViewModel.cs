@@ -16,9 +16,9 @@ namespace clickkiller.ViewModels
 
         private bool _focusNotes;
 
-        public MainViewModel()
+        public MainViewModel(string appDataPath)
         {
-            _databaseService = new DatabaseService();
+            _databaseService = new DatabaseService(appDataPath);
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
