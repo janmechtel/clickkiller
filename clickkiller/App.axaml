@@ -12,5 +12,11 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas, Menlo, Monaco, 'Courier New', monospace"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="Consolas, Menlo, Monaco, 'Courier New', monospace"/>
+        </Style>
     </Application.Styles>
 </Application>
