@@ -153,13 +153,13 @@ namespace clickkiller.Data
             command.ExecuteNonQuery();
         }
 
-        public void MarkIssueAsDone(int id)
+        public void ToggleIssueDoneStatus(int id)
         {
             using var connection = new SqliteConnection(ConnectionString);
             connection.Open();
 
             var command = connection.CreateCommand();
-            command.CommandText = "UPDATE Issues SET IsDone = 1 WHERE Id = $id";
+            command.CommandText = "UPDATE Issues SET IsDone = NOT IsDone WHERE Id = $id";
             command.Parameters.AddWithValue("$id", id);
 
             command.ExecuteNonQuery();

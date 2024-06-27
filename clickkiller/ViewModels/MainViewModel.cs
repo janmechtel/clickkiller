@@ -22,7 +22,7 @@ namespace clickkiller.ViewModels
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
-            MarkIssueAsDoneCommand = ReactiveCommand.Create<IssueViewModel>(MarkIssueAsDone);
+            ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             RefreshIssues();
         }
 
@@ -53,7 +53,7 @@ namespace clickkiller.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand FocusNotesCommand { get; }
         public ICommand DeleteIssueCommand { get; }
-        public ICommand MarkIssueAsDoneCommand { get; }
+        public ICommand ToggleIssueDoneStatusCommand { get; }
 
         private void SaveIssue()
         {
@@ -88,9 +88,9 @@ namespace clickkiller.ViewModels
             RefreshIssues();
         }
 
-        private void MarkIssueAsDone(IssueViewModel issueViewModel)
+        private void ToggleIssueDoneStatus(IssueViewModel issueViewModel)
         {
-            _databaseService.MarkIssueAsDone(issueViewModel.Id);
+            _databaseService.ToggleIssueDoneStatus(issueViewModel.Id);
             RefreshIssues();
         }
     }

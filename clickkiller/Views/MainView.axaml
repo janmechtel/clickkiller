@@ -76,7 +76,7 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                <Button Content="✓" Command="{Binding ((vm:MainViewModel)DataContext).MarkIssueAsDoneCommand, ElementName=IssuesDataGrid}" 
+                <Button Content="✓" Command="{Binding ((vm:MainViewModel)DataContext).ToggleIssueDoneStatusCommand, ElementName=IssuesDataGrid}" 
                         CommandParameter="{Binding}" Width="30" Height="30" Margin="0,0,5,0" />
                 <Button Content="X" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
                         CommandParameter="{Binding}" Width="30" Height="30" />
