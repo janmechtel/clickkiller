@@ -12,6 +12,8 @@ using SharpHook.Native;
 using System.Runtime.InteropServices;
 using System.IO;
 using Avalonia.Threading;
+using System.Threading.Tasks;
+using Velopack;
 
 namespace clickkiller;
 
@@ -37,7 +39,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
+        {    
             _trayIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://clickkiller/Assets/clickkiller.ico")));
             var trayIcon = new TrayIcon
             {
@@ -49,11 +51,19 @@ public partial class App : Application
 
             var contextMenu = new NativeMenu();
             var exitMenuItem = new NativeMenuItem("Exit");
-            exitMenuItem.Click += (sender, args) => 
+            exitMenuItem.Click += (sender, args) =>
             {
                 Environment.Exit(0);
             };
             contextMenu.Items.Add(exitMenuItem);
+
+            var updateMenuItem = new NativeMenuItem("Update");
+            updateMenuItem.Click += (sender, args) =>
+            {
+                Task.Run(UpdateApp);
+            };
+            contextMenu.Items.Add(updateMenuItem);
+
             trayIcon.Menu = contextMenu;
 
             _mainWindow = new MainWindow
@@ -77,7 +87,8 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private async void RegisterHook() {
+    private async void RegisterHook()
+    {
         var hook = new TaskPoolGlobalHook();
 
         hook.KeyReleased += OnKeyReleased;           // EventHandler<KeyboardHookEventArgs>
@@ -96,14 +107,16 @@ public partial class App : Application
 
         if (_mainWindow != null)
         {
-          Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                if (_mainWindow.IsVisible) {
-                    _mainWindow.Hide();
-                }
-                _mainWindow.Show();
-            });
+            Dispatcher.UIThread.InvokeAsync(() =>
+              {
+                  if (_mainWindow.IsVisible)
+                  {
+                      _mainWindow.Hide();
+                  }
+                  _mainWindow.Show();
+              });
         }
     }
+
 }
 
