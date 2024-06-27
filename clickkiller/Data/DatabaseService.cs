@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Microsoft.Data.Sqlite;
 using clickkiller.Data.Migrations;
 
@@ -17,12 +18,39 @@ namespace clickkiller.Data
 
     public class DatabaseService
     {
-        private const string ConnectionString = "Data Source=issues.db";
+        private readonly string ConnectionString;
         private const int CurrentVersion = 1;
 
         public DatabaseService()
         {
+            ConnectionString = $"Data Source={GetDatabasePath()}";
             InitializeDatabase();
+        }
+
+        private string GetDatabasePath()
+        {
+            string fileName = "issues.db";
+            if (IsDebugMode())
+            {
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            }
+            else
+            {
+                string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string appFolder = "clickkiller";
+                string fullPath = Path.Combine(appDataPath, appFolder);
+                Directory.CreateDirectory(fullPath);
+                return Path.Combine(fullPath, fileName);
+            }
+        }
+
+        private bool IsDebugMode()
+        {
+            #if DEBUG
+                return true;
+            #else
+                return false;
+            #endif
         }
 
         private void InitializeDatabase()
