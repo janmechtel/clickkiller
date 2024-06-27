@@ -4,26 +4,26 @@ using Avalonia.Markup.Xaml;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
-using System.Diagnostics;
 using System;
 using Avalonia.Platform;
 using SharpHook;
 using SharpHook.Native;
-using System.Runtime.InteropServices;
-using System.IO;
 using Avalonia.Threading;
 using System.Threading.Tasks;
 using Velopack;
+using Microsoft.Extensions.Logging;
 
 namespace clickkiller;
 
 public partial class App : Application
 {
+    public static MemoryLogger? Log { get; private set; } = new MemoryLogger();
     private WindowIcon? _trayIcon;
     private MainWindow? _mainWindow;
 
     public override void Initialize()
     {
+        Task.Run(UpdateApp).Wait();
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -39,7 +39,7 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {    
+        {
             _trayIcon = new WindowIcon(AssetLoader.Open(new Uri("avares://clickkiller/Assets/clickkiller.ico")));
             var trayIcon = new TrayIcon
             {
@@ -60,7 +60,7 @@ public partial class App : Application
             var updateMenuItem = new NativeMenuItem("Update");
             updateMenuItem.Click += (sender, args) =>
             {
-                Task.Run(UpdateApp);
+                Task.Run(UpdateApp).Wait();
             };
             contextMenu.Items.Add(updateMenuItem);
 
@@ -115,6 +115,33 @@ public partial class App : Application
                   }
                   _mainWindow.Show();
               });
+        }
+    }
+
+
+    private static async Task UpdateApp()
+    {
+        Log?.LogInformation("Updating app");
+        try
+        {
+
+
+            var mgr = new UpdateManager("/home/janmechtel/Projects/ck/clickkiller/clickkiller.Linux/releases");
+
+            // check for new version
+            var newVersion = await mgr.CheckForUpdatesAsync();
+            if (newVersion == null)
+                return; // no update available
+
+            // download new version
+            await mgr.DownloadUpdatesAsync(newVersion);
+
+            // install new version and restart app
+            mgr.ApplyUpdatesAndRestart(newVersion);
+        }
+        catch (Exception ex)
+        {
+            Log?.LogError(ex.Message);
         }
     }
 
