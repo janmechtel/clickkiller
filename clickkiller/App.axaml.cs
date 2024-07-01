@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Logging;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
@@ -18,11 +19,12 @@ namespace clickkiller;
 
 public partial class App : Application
 {
-    public static MemoryLogger? Log { get; private set; } = new MemoryLogger();
+    private static MyLogSink log = (MyLogSink)Logger.Sink;
     private WindowIcon? _trayIcon;
+    
     private MainWindow? _mainWindow;
     private static FileStream? _lockFile;
-    private static readonly string _appDataPath = GetAppPath();
+    public static readonly string appDataPath = GetAppPath();
 
     public override void Initialize()
     {
@@ -30,7 +32,7 @@ public partial class App : Application
             Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
         } else {
-            Log?.LogError("Exiting now because the app is probably already running.");
+            log.LogInformation("Exiting now because the app is probably already running.");
             Environment.Exit(0);
         }
     }
@@ -76,7 +78,7 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(_appDataPath)
+                DataContext = new MainViewModel(appDataPath)
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
@@ -126,11 +128,9 @@ public partial class App : Application
 
     private static async Task UpdateApp()
     {
-        Log?.LogInformation("Updating app");
+        log.LogInformation("Updating app");
         try
         {
-
-
             var mgr = new UpdateManager("/home/janmechtel/Projects/ck/clickkiller/clickkiller.Linux/releases");
 
             // check for new version
@@ -146,7 +146,7 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Log?.LogError(ex.Message);
+            log.LogError(ex.Message);
         }
     }
 
@@ -155,7 +155,7 @@ public partial class App : Application
 
         if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows())
         {
-            string lockFilePath = Path.Combine(_appDataPath, ".lock");
+            string lockFilePath = Path.Combine(appDataPath, ".lock");
             try
             {
                 // check platform to be linux or windows
@@ -165,7 +165,7 @@ public partial class App : Application
             }
             catch
             {
-                Log?.LogError("Could not lock file {lockFilePath}.", lockFilePath);
+                log.LogError("Could not lock file {lockFilePath}.", lockFilePath);
                 return false;
             }
         }

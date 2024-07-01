@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.ReactiveUI;
 using Velopack;
 using Microsoft.Extensions.Logging;
-
+using Serilog;
+using System.IO;
 
 namespace clickkiller;
 
 sealed class Program
 {
-    public static MemoryLogger Log { get; private set; } = new MemoryLogger();
+    public static ILogger<Program> logger { get; private set; } = CreateLogger();
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -18,16 +18,19 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        try {
+        try
+        {
             // It's important to Run() the VelopackApp as early as possible in app startup.
             VelopackApp.Build()
                 .WithFirstRun((v) => { /* Your first run code here */ })
-                .Run(Log);
-
+                .Run(logger);
+            Log.CloseAndFlush();
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             string message = "Unhandled exception: " + ex.ToString();
-            Log.LogError(message);
+            logger.LogError(message);
             Console.WriteLine(message);
             throw;
         }
@@ -38,6 +41,18 @@ sealed class Program
         => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .LogToMySink((Serilog.ILogger?)logger);
+
+    static ILogger<Program> CreateLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddSerilog(new LoggerConfiguration()
+                .WriteTo.File(Path.Combine(App.appDataPath, "clickkiller.txt"), rollingInterval: RollingInterval.Day, flushToDiskInterval: TimeSpan.Zero)
+                .WriteTo.Console()
+                .CreateLogger(), dispose: true);
+        });
+        return loggerFactory.CreateLogger<Program>();
+    }
 }
