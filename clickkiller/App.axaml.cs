@@ -19,12 +19,17 @@ namespace clickkiller;
 
 public partial class App : Application
 {
-    private static MyLogSink log = (MyLogSink)Logger.Sink;
+    public ILogger Logger { get; }
     private WindowIcon? _trayIcon;
     
     private MainWindow? _mainWindow;
     private static FileStream? _lockFile;
     public static readonly string appDataPath = GetAppPath();
+
+    public App(ILogger logger)
+    {
+        Logger = logger;
+    }
 
     public override void Initialize()
     {
@@ -32,7 +37,7 @@ public partial class App : Application
             Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
         } else {
-            log.LogInformation("Exiting now because the app is probably already running.");
+            Logger.LogInformation("Exiting now because the app is probably already running.");
             Environment.Exit(0);
         }
     }
@@ -126,9 +131,9 @@ public partial class App : Application
     }
 
 
-    private static async Task UpdateApp()
+    private async Task UpdateApp()
     {
-        log.LogInformation("Updating app");
+        Logger.LogInformation("Updating app");
         try
         {
             var mgr = new UpdateManager("/home/janmechtel/Projects/ck/clickkiller/clickkiller.Linux/releases");
@@ -146,11 +151,11 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            log.LogError(ex.Message);
+            Logger.LogError(ex.Message);
         }
     }
 
-    private static bool IsNotRunning()
+    private bool IsNotRunning()
     {
 
         if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows())
@@ -165,7 +170,7 @@ public partial class App : Application
             }
             catch
             {
-                log.LogError("Could not lock file {lockFilePath}.", lockFilePath);
+                Logger.LogError("Could not lock file {lockFilePath}.", lockFilePath);
                 return false;
             }
         }

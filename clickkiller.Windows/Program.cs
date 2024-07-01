@@ -1,8 +1,8 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using Velopack;
 using Microsoft.Extensions.Logging;
+using System;
+using Velopack;
 
 namespace clickkiller.Windows;
 
@@ -24,6 +24,7 @@ sealed class Program
                 .Run(Log);
 
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            Avalonia.Logging.Logger.Sink = new AvaloniaLoggingAdapter(Log);
         }
         catch (Exception ex)
         {
@@ -36,9 +37,11 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        var app = new App(Log);
+        return AppBuilder.Configure(() => app)
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
             .UseReactiveUI();
+    }
 }

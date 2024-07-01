@@ -38,11 +38,14 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-        => AppBuilder.Configure<App>()
+    {
+        var app = new App(logger);
+
+        return AppBuilder.Configure(() => app)
             .UsePlatformDetect()
             .WithInterFont()
-            .UseReactiveUI()
-            .LogToMySink((Serilog.ILogger?)logger);
+            .UseReactiveUI();
+    }
 
     static ILogger<Program> CreateLogger()
     {
