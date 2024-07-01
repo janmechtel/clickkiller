@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Linq;
 using ReactiveUI;
 using clickkiller.Data;
+using System.Reactive.Linq;
 
 namespace clickkiller.ViewModels
 {
@@ -24,6 +25,10 @@ namespace clickkiller.ViewModels
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             RefreshIssues();
+
+            this.WhenAnyValue(x => x.Application)
+                .Throttle(TimeSpan.FromMilliseconds(300))
+                .Subscribe(_ => RefreshIssues());
         }
 
         public bool FocusNotes
@@ -60,7 +65,6 @@ namespace clickkiller.ViewModels
             if (!string.IsNullOrWhiteSpace(Application) && !string.IsNullOrWhiteSpace(Notes))
             {
                 _databaseService.SaveIssue(Application, Notes);
-                Application = string.Empty;
                 Notes = string.Empty;
                 RefreshIssues();
             }
@@ -68,7 +72,7 @@ namespace clickkiller.ViewModels
 
         private void RefreshIssues()
         {
-            var issues = _databaseService.GetAllIssues();
+            var issues = _databaseService.GetAllIssues(Application);
             var issueViewModels = new ObservableCollection<IssueViewModel>();
 
             DateTime? lastDate = null;
