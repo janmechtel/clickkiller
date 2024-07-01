@@ -14,8 +14,8 @@ namespace clickkiller.ViewModels
         private string _application = string.Empty;
         private string _notes = string.Empty;
         private ObservableCollection<IssueViewModel> _issues = [];
-
         private bool _focusNotes;
+        private bool? _filterDoneStatus;
 
         public MainViewModel(string appDataPath)
         {
@@ -26,7 +26,7 @@ namespace clickkiller.ViewModels
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             RefreshIssues();
 
-            this.WhenAnyValue(x => x.Application)
+            this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
                 .Throttle(TimeSpan.FromMilliseconds(300))
                 .Subscribe(_ => RefreshIssues());
         }
@@ -46,7 +46,17 @@ namespace clickkiller.ViewModels
         public string Notes
         {
             get => _notes;
-            set => this.RaiseAndSetIfChanged(ref _notes, value);
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _notes, value);
+                RefreshIssues();
+            }
+        }
+
+        public bool? FilterDoneStatus
+        {
+            get => _filterDoneStatus;
+            set => this.RaiseAndSetIfChanged(ref _filterDoneStatus, value);
         }
 
         public ObservableCollection<IssueViewModel> Issues
@@ -73,13 +83,19 @@ namespace clickkiller.ViewModels
         private void RefreshIssues()
         {
             var issues = _databaseService.GetAllIssues(Application);
+        
+            if (FilterDoneStatus.HasValue)
+            {
+                issues = issues.Where(i => i.IsDone == FilterDoneStatus.Value).ToList();
+            }
+        
             var issueViewModels = new ObservableCollection<IssueViewModel>();
 
             DateTime? lastDate = null;
             foreach (var issue in issues.OrderByDescending(i => i.Timestamp))
             {
                 bool showDate = !lastDate.HasValue || issue.Timestamp.Date != lastDate.Value.Date;
-                issueViewModels.Add(new IssueViewModel(issue, showDate));
+                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes));
                 lastDate = issue.Timestamp;
             }
 
@@ -107,8 +123,9 @@ namespace clickkiller.ViewModels
         public string Notes { get; }
         public bool ShowDate { get; }
         public bool IsDone { get; }
+        public string HighlightText { get; }
 
-        public IssueViewModel(Issue issue, bool showDate)
+        public IssueViewModel(Issue issue, bool showDate, string highlightText)
         {
             Id = issue.Id;
             Timestamp = issue.Timestamp;
@@ -116,6 +133,7 @@ namespace clickkiller.ViewModels
             Notes = issue.Notes;
             ShowDate = showDate;
             IsDone = issue.IsDone;
+            HighlightText = highlightText;
         }
     }
 }

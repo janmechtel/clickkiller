@@ -7,6 +7,9 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="clickkiller.Views.MainView"
              x:DataType="vm:MainViewModel">
+  <UserControl.Resources>
+    <converters:HighlightTextConverter x:Key="HighlightTextConverter"/>
+  </UserControl.Resources>
   <Design.DataContext>
     <vm:MainViewModel />
   </Design.DataContext>
@@ -60,7 +63,13 @@
           <DataGridTemplateColumn.CellTemplate>
             <DataTemplate>
               <Grid>
-                <TextBlock Text="{Binding Notes}" VerticalAlignment="Center" Margin="5,0,5,0">
+                <TextBlock VerticalAlignment="Center" Margin="5,0,5,0">
+                  <TextBlock.Inlines>
+                    <MultiBinding Converter="{StaticResource HighlightTextConverter}">
+                      <Binding Path="Notes" />
+                      <Binding Path="((vm:MainViewModel)DataContext).Notes" RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                    </MultiBinding>
+                  </TextBlock.Inlines>
                   <TextBlock.Styles>
                     <Style Selector="TextBlock">
                       <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
