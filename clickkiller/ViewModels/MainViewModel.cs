@@ -24,6 +24,7 @@ namespace clickkiller.ViewModels
         public ICommand ToggleIssueDoneStatusCommand { get; }
         public ICommand ShowTrayIconCommand { get; }
         public ICommand UpdateCommand { get; }
+        public ICommand DuplicateIssueCommand { get; }
 
         public MainViewModel(string appDataPath)
         {
@@ -35,6 +36,7 @@ namespace clickkiller.ViewModels
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             ShowTrayIconCommand = ReactiveCommand.Create(ShowTrayIcon);
             UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
+            DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             RefreshIssues();
 
             this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
@@ -124,6 +126,12 @@ namespace clickkiller.ViewModels
         private void ToggleIssueDoneStatus(IssueViewModel issueViewModel)
         {
             _databaseService.ToggleIssueDoneStatus(issueViewModel.Id);
+            RefreshIssues();
+        }
+
+        private void DuplicateIssue(IssueViewModel issueViewModel)
+        {
+            _databaseService.SaveIssue(issueViewModel.Application, issueViewModel.Notes, issueViewModel.Id);
             RefreshIssues();
         }
     }

@@ -14,6 +14,7 @@ namespace clickkiller.Data
         public required string Application { get; set; }
         public required string Notes { get; set; }
         public bool IsDone { get; set; }
+        public int? DuplicateOf { get; set; }
     }
 
     public class DatabaseService
@@ -96,7 +97,7 @@ namespace clickkiller.Data
             command.ExecuteNonQuery();
         }
 
-        public void SaveIssue(string application, string notes)
+        public void SaveIssue(string application, string notes, int? duplicateOf = null)
         {
             using var connection = new SqliteConnection(ConnectionString);
             connection.Open();
@@ -104,13 +105,14 @@ namespace clickkiller.Data
             var command = connection.CreateCommand();
             command.CommandText =
             @"
-                INSERT INTO Issues (Timestamp, Application, Notes, IsDone)
-                VALUES ($timestamp, $application, $notes, $isDone)
+                INSERT INTO Issues (Timestamp, Application, Notes, IsDone, DuplicateOf)
+                VALUES ($timestamp, $application, $notes, $isDone, $duplicateOf)
             ";
             command.Parameters.AddWithValue("$timestamp", DateTime.Now.ToString("o"));
             command.Parameters.AddWithValue("$application", application);
             command.Parameters.AddWithValue("$notes", notes);
             command.Parameters.AddWithValue("$isDone", 0);
+            command.Parameters.AddWithValue("$duplicateOf", duplicateOf.HasValue ? duplicateOf.Value : DBNull.Value);
 
             command.ExecuteNonQuery();
         }
@@ -124,7 +126,7 @@ namespace clickkiller.Data
 
             var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Timestamp, Application, Notes, IsDone 
+                SELECT Id, Timestamp, Application, Notes, IsDone, DuplicateOf
                 FROM Issues 
                 WHERE Application LIKE $applicationFilter
                 ORDER BY Timestamp DESC";
@@ -139,7 +141,8 @@ namespace clickkiller.Data
                     Timestamp = DateTime.Parse(reader.GetString(1)),
                     Application = reader.GetString(2),
                     Notes = reader.GetString(3),
-                    IsDone = reader.GetInt32(4) != 0
+                    IsDone = reader.GetInt32(4) != 0,
+                    DuplicateOf = reader.IsDBNull(5) ? null : reader.GetInt32(5)
                 });
             }
 
