@@ -24,6 +24,11 @@ public partial class App : Application
     private static FileStream? _lockFile;
     private static readonly string _appDataPath = GetAppPath();
 
+    public static void ExitApplication()
+    {
+        Environment.Exit(0);
+    }
+
     public override void Initialize()
     {
         if (IsNotRunning()) {
@@ -59,10 +64,7 @@ public partial class App : Application
 
             var contextMenu = new NativeMenu();
             var exitMenuItem = new NativeMenuItem("Exit");
-            exitMenuItem.Click += (sender, args) =>
-            {
-                Environment.Exit(0);
-            };
+            exitMenuItem.Click += (sender, args) => ExitApplication();
             contextMenu.Items.Add(exitMenuItem);
 
             var updateMenuItem = new NativeMenuItem("Update");

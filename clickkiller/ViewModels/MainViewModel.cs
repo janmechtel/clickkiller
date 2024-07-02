@@ -6,9 +6,6 @@ using ReactiveUI;
 using clickkiller.Data;
 using System.Reactive.Linq;
 
-using System.Windows.Input;
-using ReactiveUI;
-
 namespace clickkiller.ViewModels
 {
     public class MainViewModel : ViewModelBase
@@ -83,12 +80,6 @@ namespace clickkiller.ViewModels
             get => _issues;
             private set => this.RaiseAndSetIfChanged(ref _issues, value);
         }
-
-        public ICommand SaveCommand { get; }
-        public ICommand FocusNotesCommand { get; }
-        public ICommand DeleteIssueCommand { get; }
-        public ICommand ToggleIssueDoneStatusCommand { get; }
-        public ICommand ShowTrayIconCommand { get; }
 
         private void SaveIssue()
         {
