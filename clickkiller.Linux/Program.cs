@@ -24,7 +24,7 @@ sealed class Program
             VelopackApp.Build()
                 .WithFirstRun((v) => { /* Your first run code here */ })
                 .Run(logger);
-            BuildAvaloniaApp();
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
@@ -37,14 +37,17 @@ sealed class Program
 
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
-    {
-        var app = new App(logger);
-
-        return AppBuilder.Configure(() => app)
+        => AppBuilder.Configure<App>()
             .UsePlatformDetect()
             .WithInterFont()
-            .UseReactiveUI();
-    }
+            .UseReactiveUI()
+            .AfterSetup(builder =>
+            {
+                if (builder.Instance is not null) {
+                    var app = (App)builder.Instance;
+                    app.Logger = logger;
+                }
+            });
 
     static ILogger<Program> CreateLogger()
     {
