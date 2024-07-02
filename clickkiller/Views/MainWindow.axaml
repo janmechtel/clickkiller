@@ -13,7 +13,7 @@
         SizeToContent="WidthAndHeight">
     <Grid>
         <DockPanel>
-            <Menu Name="MainMenu" DockPanel.Dock="Top" IsVisible="{Binding ElementName=MenuTrigger, Path=IsPointerOver}">
+            <Menu Name="MainMenu" DockPanel.Dock="Top" IsVisible="False">
                 <MenuItem Header="_File">
                     <MenuItem Header="_Update" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateCommand}" />
                     <MenuItem Header="_Exit" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}" />
