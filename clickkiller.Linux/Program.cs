@@ -25,7 +25,7 @@ sealed class Program
                 .WithFirstRun((v) => { /* Your first run code here */ })
                 .Run(logger);
             Log.CloseAndFlush();
-            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            // BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
