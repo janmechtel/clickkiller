@@ -6,10 +6,18 @@ using ReactiveUI;
 using clickkiller.Data;
 using System.Reactive.Linq;
 
+using System.Windows.Input;
+using ReactiveUI;
+
 namespace clickkiller.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
+        public ICommand ExitCommand { get; }
+
+        public MainViewModel(string appDataPath) : base()
+        {
+            ExitCommand = ReactiveCommand.Create(App.ExitApplication);
         private readonly DatabaseService _databaseService;
         private string _application = string.Empty;
         private string _notes = string.Empty;
