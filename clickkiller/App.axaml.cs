@@ -26,6 +26,11 @@ public partial class App : Application
     private static FileStream? _lockFile;
     public static readonly string appDataPath = GetAppPath();
 
+    public static void ExitApplication()
+    {
+        Environment.Exit(0);
+    }
+
     public App(ILogger logger)
     {
         Logger = logger;
@@ -66,10 +71,7 @@ public partial class App : Application
 
             var contextMenu = new NativeMenu();
             var exitMenuItem = new NativeMenuItem("Exit");
-            exitMenuItem.Click += (sender, args) =>
-            {
-                Environment.Exit(0);
-            };
+            exitMenuItem.Click += (sender, args) => ExitApplication();
             contextMenu.Items.Add(exitMenuItem);
 
             var updateMenuItem = new NativeMenuItem("Update");
@@ -83,7 +85,7 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(appDataPath)
+                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp)
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
@@ -131,7 +133,7 @@ public partial class App : Application
     }
 
 
-    private async Task UpdateApp()
+    public async Task UpdateApp()
     {
         Logger.LogInformation("Updating app");
         try
