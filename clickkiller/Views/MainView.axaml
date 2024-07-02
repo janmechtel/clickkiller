@@ -37,10 +37,15 @@
                             Command="{Binding SaveCommand}" />
             </TextBox.KeyBindings>
         </TextBox>
-        <Button Content="Save Issue"
-                Command="{Binding SaveCommand}"
-                HorizontalAlignment="Left"
-                Margin="0,0,0,20" />
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <Button Content="Save Issue"
+                    Command="{Binding SaveCommand}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,10,0" />
+            <Button Content="Show Tray Icon"
+                    Command="{Binding ShowTrayIconCommand}"
+                    HorizontalAlignment="Left" />
+        </StackPanel>
         <DataGrid Name="IssuesDataGrid"
                   ItemsSource="{Binding Issues}"
                   AutoGenerateColumns="False"
@@ -113,7 +118,7 @@
                                         Margin="5,0,5,0">
                                 <Button Content="✓"
                                         Command="{Binding ((vm:MainViewModel)DataContext).ToggleIssueDoneStatusCommand, ElementName=IssuesDataGrid}"
-                                        CommandParameter="{Binding}"
+                                        CommandParameter="{Binding}"Command="{Binding ExitCommand}"
                                         Width="30"
                                         Height="30"
                                         Margin="0,0,5,0" />
