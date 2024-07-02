@@ -4,88 +4,134 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:clickkiller.ViewModels"
              xmlns:converters="clr-namespace:clickkiller.Converters"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d"
+             d:DesignWidth="800"
+             d:DesignHeight="450"
              x:Class="clickkiller.Views.MainView"
              x:DataType="vm:MainViewModel">
-  <Design.DataContext>
-    <vm:MainViewModel />
-  </Design.DataContext>
-
-  <Grid RowDefinitions="200,400">
-    <StackPanel Grid.Row="0" Margin="10">
-      <TextBox Name="ApplicationTextBox" Text="{Binding Application}" Watermark="Application" Margin="0,0,0,10">
-        <TextBox.KeyBindings>
-          <KeyBinding Gesture="Enter" Command="{Binding FocusNotesCommand}" />
-        </TextBox.KeyBindings>
-      </TextBox>
-      <TextBox Name="NotesTextBox" Text="{Binding Notes}" Watermark="Notes" Height="100" AcceptsReturn="True" TextWrapping="Wrap" Margin="0,0,0,10">
-        <TextBox.KeyBindings>
-          <KeyBinding Gesture="Ctrl+Enter" Command="{Binding SaveCommand}" />
-        </TextBox.KeyBindings>
-      </TextBox>
-      <Button Content="Save Issue" Command="{Binding SaveCommand}" HorizontalAlignment="Left" Background="Blue"/>
+    <UserControl.Resources>
+        <converters:HighlightTextConverter x:Key="HighlightTextConverter" />
+    </UserControl.Resources>
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+    <StackPanel Margin="10">
+        <TextBox Name="ApplicationTextBox"
+                 Text="{Binding Application}"
+                 Watermark="Application"
+                 Margin="0,0,0,10">
+            <TextBox.KeyBindings>
+                <KeyBinding Gesture="Enter"
+                            Command="{Binding FocusNotesCommand}" />
+            </TextBox.KeyBindings>
+        </TextBox>
+        <TextBox Name="NotesTextBox"
+                 Text="{Binding Notes}"
+                 Watermark="Notes"
+                 Height="100"
+                 AcceptsReturn="True"
+                 TextWrapping="Wrap"
+                 Margin="0,0,0,10">
+            <TextBox.KeyBindings>
+                <KeyBinding Gesture="Ctrl+Enter"
+                            Command="{Binding SaveCommand}" />
+            </TextBox.KeyBindings>
+        </TextBox>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+            <Button Content="Save Issue"
+                    Command="{Binding SaveCommand}"
+                    HorizontalAlignment="Left"
+                    Margin="0,0,10,0" />
+            <Button Content="Show Tray Icon"
+                    Command="{Binding ShowTrayIconCommand}"
+                    HorizontalAlignment="Left" />
+        </StackPanel>
+        <DataGrid Name="IssuesDataGrid"
+                  ItemsSource="{Binding Issues}"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Timestamp">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid Margin="5,5,5,5">
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment="Right"
+                                            VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:yyyy-MM-dd}}"
+                                               IsVisible="{Binding ShowDate}"
+                                               Margin="0,0,5,0" />
+                                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" />
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Application">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Application}"
+                                       VerticalAlignment="Center"
+                                       Margin="5,0,5,0">
+                                <TextBlock.Styles>
+                                    <Style Selector="TextBlock">
+                                        <Setter Property="TextDecorations"
+                                                Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}" />
+                                        <Setter Property="Opacity"
+                                                Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}" />
+                                    </Style>
+                                </TextBlock.Styles>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Notes">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock VerticalAlignment="Center"
+                                           Margin="5,0,5,0">
+                                    <TextBlock.Inlines>
+                                        <MultiBinding Converter="{StaticResource HighlightTextConverter}">
+                                            <Binding Path="Notes" />
+                                            <Binding Path="((vm:MainViewModel)DataContext).Notes"
+                                                     RelativeSource="{RelativeSource AncestorType=UserControl}" />
+                                        </MultiBinding>
+                                    </TextBlock.Inlines>
+                                    <TextBlock.Styles>
+                                        <Style Selector="TextBlock">
+                                            <Setter Property="TextDecorations"
+                                                    Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}" />
+                                            <Setter Property="Opacity"
+                                                    Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}" />
+                                        </Style>
+                                    </TextBlock.Styles>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Actions">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        Margin="5,0,5,0">
+                                <Button Content="✓"
+                                        Command="{Binding ((vm:MainViewModel)DataContext).ToggleIssueDoneStatusCommand, ElementName=IssuesDataGrid}"
+                                        CommandParameter="{Binding}"
+                                        Width="30"
+                                        Height="30"
+                                        Margin="0,0,5,0" />
+                                <Button Content="X"
+                                        Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}"
+                                        CommandParameter="{Binding}"
+                                        Width="30"
+                                        Height="30" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </StackPanel>
-    <DataGrid Name="IssuesDataGrid" Grid.Row="1" ItemsSource="{Binding Issues}" AutoGenerateColumns="False" IsReadOnly="True">
-      <DataGrid.Columns>
-        <DataGridTemplateColumn Header="Timestamp">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <Grid Margin="5,5,5,5">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                  <TextBlock Text="{Binding Timestamp, StringFormat={}{0:yyyy-MM-dd}}" 
-                             IsVisible="{Binding ShowDate}"
-                             Margin="0,0,5,0"/>
-                  <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" 
-                             />
-                </StackPanel>
-              </Grid>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Application">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-                <TextBlock Text="{Binding Application}" VerticalAlignment="Center" Margin="5,0,5,0">
-                  <TextBlock.Styles>
-                    <Style Selector="TextBlock">
-                      <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
-                      <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
-                    </Style>
-                  </TextBlock.Styles>
-                </TextBlock>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Notes">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <Grid>
-                <TextBlock Text="{Binding Notes}" VerticalAlignment="Center" Margin="5,0,5,0">
-                  <TextBlock.Styles>
-                    <Style Selector="TextBlock">
-                      <Setter Property="TextDecorations" Value="{Binding IsDone, Converter={x:Static converters:BooleanToTextDecorationConverter.Instance}}"/>
-                      <Setter Property="Opacity" Value="{Binding IsDone, Converter={x:Static converters:BooleanToOpacityConverter.Instance}}"/>
-                    </Style>
-                  </TextBlock.Styles>
-                </TextBlock>
-              </Grid>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-        <DataGridTemplateColumn Header="Actions">
-          <DataGridTemplateColumn.CellTemplate>
-            <DataTemplate>
-              <StackPanel Orientation="Horizontal" Margin="5,0,5,0">
-                <Button Content="✓" Command="{Binding ((vm:MainViewModel)DataContext).ToggleIssueDoneStatusCommand, ElementName=IssuesDataGrid}" 
-                        CommandParameter="{Binding}" Width="30" Height="30" Margin="0,0,5,0" />
-                <Button Content="X" Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}" 
-                        CommandParameter="{Binding}" Width="30" Height="30" />
-              </StackPanel>
-            </DataTemplate>
-          </DataGridTemplateColumn.CellTemplate>
-        </DataGridTemplateColumn>
-      </DataGrid.Columns>
-    </DataGrid>
-  </Grid>
 </UserControl>
-

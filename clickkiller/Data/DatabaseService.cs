@@ -115,7 +115,7 @@ namespace clickkiller.Data
             command.ExecuteNonQuery();
         }
 
-        public List<Issue> GetAllIssues()
+        public List<Issue> GetAllIssues(string applicationFilter = "")
         {
             var issues = new List<Issue>();
 
@@ -123,7 +123,12 @@ namespace clickkiller.Data
             connection.Open();
 
             var command = connection.CreateCommand();
-            command.CommandText = "SELECT Id, Timestamp, Application, Notes, IsDone FROM Issues ORDER BY Timestamp DESC";
+            command.CommandText = @"
+                SELECT Id, Timestamp, Application, Notes, IsDone 
+                FROM Issues 
+                WHERE Application LIKE $applicationFilter
+                ORDER BY Timestamp DESC";
+            command.Parameters.AddWithValue("$applicationFilter", $"%{applicationFilter}%");
 
             using var reader = command.ExecuteReader();
             while (reader.Read())

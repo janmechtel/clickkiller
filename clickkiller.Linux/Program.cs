@@ -24,8 +24,7 @@ sealed class Program
             VelopackApp.Build()
                 .WithFirstRun((v) => { /* Your first run code here */ })
                 .Run(logger);
-            Log.CloseAndFlush();
-            // BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp();
         }
         catch (Exception ex)
         {
