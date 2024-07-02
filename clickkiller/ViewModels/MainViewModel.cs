@@ -102,7 +102,8 @@ namespace clickkiller.ViewModels
             foreach (var issue in issues.OrderByDescending(i => i.Timestamp))
             {
                 bool showDate = !lastDate.HasValue || issue.Timestamp.Date != lastDate.Value.Date;
-                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes));
+                int duplicateCount = _databaseService.GetDuplicateCount(issue.Id);
+                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes, duplicateCount));
                 lastDate = issue.Timestamp;
             }
 
@@ -139,7 +140,9 @@ namespace clickkiller.ViewModels
         public string HighlightText { get; }
         public bool IsDuplicate { get; }
 
-        public IssueViewModel(Issue issue, bool showDate, string highlightText)
+        public int DuplicateCount { get; }
+
+        public IssueViewModel(Issue issue, bool showDate, string highlightText, int duplicateCount)
         {
             Id = issue.Id;
             Timestamp = issue.Timestamp;
@@ -149,6 +152,7 @@ namespace clickkiller.ViewModels
             IsDone = issue.IsDone;
             HighlightText = highlightText;
             IsDuplicate = issue.DuplicateOf.HasValue;
+            DuplicateCount = duplicateCount;
         }
     }
 }

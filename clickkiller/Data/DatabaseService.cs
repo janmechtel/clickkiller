@@ -171,6 +171,18 @@ namespace clickkiller.Data
             return issues;
         }
 
+        public int GetDuplicateCount(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT COUNT(*) FROM Issues WHERE DuplicateOf = $id";
+            command.Parameters.AddWithValue("$id", id);
+
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
+
         public void DeleteIssue(int id)
         {
             using var connection = new SqliteConnection(ConnectionString);
