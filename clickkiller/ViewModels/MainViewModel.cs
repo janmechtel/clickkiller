@@ -13,21 +13,24 @@ namespace clickkiller.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        public ICommand ExitCommand { get; }
-
-        public MainViewModel(string appDataPath) : base()
-        {
-            ExitCommand = ReactiveCommand.Create(App.ExitApplication);
         private readonly DatabaseService _databaseService;
         private string _application = string.Empty;
         private string _notes = string.Empty;
-        private ObservableCollection<IssueViewModel> _issues = [];
+        private ObservableCollection<IssueViewModel> _issues = new ObservableCollection<IssueViewModel>();
         private bool _focusNotes;
         private bool? _filterDoneStatus;
+
+        public ICommand ExitCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand FocusNotesCommand { get; }
+        public ICommand DeleteIssueCommand { get; }
+        public ICommand ToggleIssueDoneStatusCommand { get; }
+        public ICommand ShowTrayIconCommand { get; }
 
         public MainViewModel(string appDataPath)
         {
             _databaseService = new DatabaseService(appDataPath);
+            ExitCommand = ReactiveCommand.Create(App.ExitApplication);
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
