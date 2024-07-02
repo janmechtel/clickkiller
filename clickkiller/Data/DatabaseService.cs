@@ -14,12 +14,13 @@ namespace clickkiller.Data
         public required string Application { get; set; }
         public required string Notes { get; set; }
         public bool IsDone { get; set; }
+        public int? DuplicateOf { get; set; }
     }
 
     public class DatabaseService
     {
         private readonly string ConnectionString;
-        private const int CurrentVersion = 1;
+        private const int CurrentVersion = 2;
 
         public DatabaseService(string appDataPath)
         {
@@ -75,7 +76,8 @@ namespace clickkiller.Data
         {
             var migrations = new List<IMigration>
             {
-                new AddIsDoneColumnMigration()
+                new AddIsDoneColumnMigration(),
+                new AddDuplicateOfColumnMigration()
             };
 
             foreach (var migration in migrations.OrderBy(m => m.Version))
@@ -96,23 +98,45 @@ namespace clickkiller.Data
             command.ExecuteNonQuery();
         }
 
-        public void SaveIssue(string application, string notes)
+        public void SaveIssue(string application, string notes, int? duplicateOf = null)
         {
             using var connection = new SqliteConnection(ConnectionString);
             connection.Open();
 
+            if (duplicateOf.HasValue)
+            {
+                duplicateOf = GetRootDuplicateId(connection, duplicateOf.Value);
+            }
+
             var command = connection.CreateCommand();
             command.CommandText =
             @"
-                INSERT INTO Issues (Timestamp, Application, Notes, IsDone)
-                VALUES ($timestamp, $application, $notes, $isDone)
+                INSERT INTO Issues (Timestamp, Application, Notes, IsDone, DuplicateOf)
+                VALUES ($timestamp, $application, $notes, $isDone, $duplicateOf)
             ";
             command.Parameters.AddWithValue("$timestamp", DateTime.Now.ToString("o"));
             command.Parameters.AddWithValue("$application", application);
             command.Parameters.AddWithValue("$notes", notes);
             command.Parameters.AddWithValue("$isDone", 0);
+            command.Parameters.AddWithValue("$duplicateOf", duplicateOf.HasValue ? duplicateOf.Value : DBNull.Value);
 
             command.ExecuteNonQuery();
+        }
+
+        private int GetRootDuplicateId(SqliteConnection connection, int duplicateId)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT DuplicateOf FROM Issues WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", duplicateId);
+
+            var result = command.ExecuteScalar();
+
+            if (result != null && result != DBNull.Value)
+            {
+                return GetRootDuplicateId(connection, Convert.ToInt32(result));
+            }
+
+            return duplicateId;
         }
 
         public List<Issue> GetAllIssues(string applicationFilter = "")
@@ -124,9 +148,9 @@ namespace clickkiller.Data
 
             var command = connection.CreateCommand();
             command.CommandText = @"
-                SELECT Id, Timestamp, Application, Notes, IsDone 
+                SELECT Id, Timestamp, Application, Notes, IsDone, DuplicateOf
                 FROM Issues 
-                WHERE Application LIKE $applicationFilter
+                WHERE Application LIKE $applicationFilter AND DuplicateOf IS NULL
                 ORDER BY Timestamp DESC";
             command.Parameters.AddWithValue("$applicationFilter", $"%{applicationFilter}%");
 
@@ -139,11 +163,45 @@ namespace clickkiller.Data
                     Timestamp = DateTime.Parse(reader.GetString(1)),
                     Application = reader.GetString(2),
                     Notes = reader.GetString(3),
-                    IsDone = reader.GetInt32(4) != 0
+                    IsDone = reader.GetInt32(4) != 0,
+                    DuplicateOf = reader.IsDBNull(5) ? null : reader.GetInt32(5)
                 });
             }
 
             return issues;
+        }
+
+        public int GetDuplicateCount(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT COUNT(*) FROM Issues WHERE DuplicateOf = $id";
+            command.Parameters.AddWithValue("$id", id);
+
+            return Convert.ToInt32(command.ExecuteScalar());
+        }
+
+        public DateTime GetMostRecentTimestamp(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+                WITH RECURSIVE DuplicateIssues AS (
+                    SELECT Id, Timestamp, DuplicateOf FROM Issues WHERE Id = $id
+                    UNION ALL
+                    SELECT i.Id, i.Timestamp, i.DuplicateOf
+                    FROM Issues i
+                    INNER JOIN DuplicateIssues di ON i.DuplicateOf = di.Id
+                )
+                SELECT MAX(Timestamp) FROM DuplicateIssues
+            ";
+            command.Parameters.AddWithValue("$id", id);
+
+            return DateTime.Parse(command.ExecuteScalar().ToString());
         }
 
         public void DeleteIssue(int id)

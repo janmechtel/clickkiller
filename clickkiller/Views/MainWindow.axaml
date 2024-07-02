@@ -10,6 +10,7 @@
         x:Class="clickkiller.Views.MainWindow"
         Icon="/Assets/clickkiller.ico"
         Title="clickkiller"
+        WindowState="Maximized"
         SizeToContent="WidthAndHeight">
     <Grid>
         <DockPanel>
@@ -20,7 +21,7 @@
                 </MenuItem>
             </Menu>
             <views:MainView HorizontalAlignment="Center"
-                            VerticalAlignment="Center" />
+                            VerticalAlignment="Stretch" />
         </DockPanel>
         <Rectangle Name="MenuTrigger" Height="20" VerticalAlignment="Top" Fill="Transparent"/>
     </Grid>

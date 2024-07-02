@@ -18,14 +18,17 @@ sealed class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        try {
+        try
+        {
             // It's important to Run() the VelopackApp as early as possible in app startup.
             VelopackApp.Build()
                 .WithFirstRun((v) => { /* Your first run code here */ })
                 .Run(Log);
 
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
-        } catch (Exception ex) {
+        }
+        catch (Exception ex)
+        {
             string message = "Unhandled exception: " + ex.ToString();
             Log.LogError(message);
             Console.WriteLine(message);

@@ -22,8 +22,8 @@ namespace clickkiller.ViewModels
         public ICommand FocusNotesCommand { get; }
         public ICommand DeleteIssueCommand { get; }
         public ICommand ToggleIssueDoneStatusCommand { get; }
-        public ICommand ShowTrayIconCommand { get; }
         public ICommand UpdateCommand { get; }
+        public ICommand DuplicateIssueCommand { get; }
 
         public MainViewModel(string appDataPath)
         {
@@ -33,8 +33,8 @@ namespace clickkiller.ViewModels
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
-            ShowTrayIconCommand = ReactiveCommand.Create(ShowTrayIcon);
             UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
+            DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             RefreshIssues();
 
             this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
@@ -42,12 +42,6 @@ namespace clickkiller.ViewModels
                 .Subscribe(_ => RefreshIssues());
         }
 
-        private void ShowTrayIcon()
-        {
-            // Implementation for showing the tray icon
-            // This will depend on how your tray icon is implemented
-            // You might need to call a method from your App class or a TrayIcon service
-        }
 
         public bool FocusNotes
         {
@@ -108,7 +102,9 @@ namespace clickkiller.ViewModels
             foreach (var issue in issues.OrderByDescending(i => i.Timestamp))
             {
                 bool showDate = !lastDate.HasValue || issue.Timestamp.Date != lastDate.Value.Date;
-                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes));
+                int duplicateCount = _databaseService.GetDuplicateCount(issue.Id);
+                DateTime mostRecentTimestamp = _databaseService.GetMostRecentTimestamp(issue.Id);
+                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes, duplicateCount, mostRecentTimestamp));
                 lastDate = issue.Timestamp;
             }
 
@@ -126,6 +122,12 @@ namespace clickkiller.ViewModels
             _databaseService.ToggleIssueDoneStatus(issueViewModel.Id);
             RefreshIssues();
         }
+
+        private void DuplicateIssue(IssueViewModel issueViewModel)
+        {
+            _databaseService.SaveIssue(issueViewModel.Application, issueViewModel.Notes, issueViewModel.Id);
+            RefreshIssues();
+        }
     }
 
     public class IssueViewModel : ViewModelBase
@@ -137,8 +139,13 @@ namespace clickkiller.ViewModels
         public bool ShowDate { get; }
         public bool IsDone { get; }
         public string HighlightText { get; }
+        public bool IsDuplicate { get; }
 
-        public IssueViewModel(Issue issue, bool showDate, string highlightText)
+        public int DuplicateCount { get; }
+
+        public DateTime MostRecentTimestamp { get; }
+
+        public IssueViewModel(Issue issue, bool showDate, string highlightText, int duplicateCount, DateTime mostRecentTimestamp)
         {
             Id = issue.Id;
             Timestamp = issue.Timestamp;
@@ -147,6 +154,10 @@ namespace clickkiller.ViewModels
             ShowDate = showDate;
             IsDone = issue.IsDone;
             HighlightText = highlightText;
+            IsDuplicate = issue.DuplicateOf.HasValue;
+            DuplicateCount = duplicateCount;
+            MostRecentTimestamp = mostRecentTimestamp;
+
         }
     }
 }
