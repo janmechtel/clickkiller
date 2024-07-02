@@ -13,22 +13,40 @@ namespace clickkiller.ViewModels
         private readonly DatabaseService _databaseService;
         private string _application = string.Empty;
         private string _notes = string.Empty;
-        private ObservableCollection<IssueViewModel> _issues = [];
+        private ObservableCollection<IssueViewModel> _issues = new ObservableCollection<IssueViewModel>();
         private bool _focusNotes;
         private bool? _filterDoneStatus;
+
+        public ICommand ExitCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand FocusNotesCommand { get; }
+        public ICommand DeleteIssueCommand { get; }
+        public ICommand ToggleIssueDoneStatusCommand { get; }
+        public ICommand ShowTrayIconCommand { get; }
+        public ICommand UpdateCommand { get; }
 
         public MainViewModel(string appDataPath)
         {
             _databaseService = new DatabaseService(appDataPath);
+            ExitCommand = ReactiveCommand.Create(App.ExitApplication);
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
+            ShowTrayIconCommand = ReactiveCommand.Create(ShowTrayIcon);
+            UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
             RefreshIssues();
 
             this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
                 .Throttle(TimeSpan.FromMilliseconds(300))
                 .Subscribe(_ => RefreshIssues());
+        }
+
+        private void ShowTrayIcon()
+        {
+            // Implementation for showing the tray icon
+            // This will depend on how your tray icon is implemented
+            // You might need to call a method from your App class or a TrayIcon service
         }
 
         public bool FocusNotes
@@ -64,11 +82,6 @@ namespace clickkiller.ViewModels
             get => _issues;
             private set => this.RaiseAndSetIfChanged(ref _issues, value);
         }
-
-        public ICommand SaveCommand { get; }
-        public ICommand FocusNotesCommand { get; }
-        public ICommand DeleteIssueCommand { get; }
-        public ICommand ToggleIssueDoneStatusCommand { get; }
 
         private void SaveIssue()
         {
