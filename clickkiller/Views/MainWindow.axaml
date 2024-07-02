@@ -11,16 +11,17 @@
         Icon="/Assets/clickkiller.ico"
         Title="clickkiller"
         SizeToContent="WidthAndHeight">
-    <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Update" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateCommand}" />
-                <MenuItem Header="_Exit" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}" />
-            </MenuItem>
-        </Menu>
-        <Grid>
+    <Grid>
+        <DockPanel>
+            <Menu Name="MainMenu" DockPanel.Dock="Top" IsVisible="{Binding ElementName=MenuTrigger, Path=IsPointerOver}">
+                <MenuItem Header="_File">
+                    <MenuItem Header="_Update" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateCommand}" />
+                    <MenuItem Header="_Exit" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}" />
+                </MenuItem>
+            </Menu>
             <views:MainView HorizontalAlignment="Center"
                             VerticalAlignment="Center" />
-        </Grid>
-    </DockPanel>
+        </DockPanel>
+        <Rectangle Name="MenuTrigger" Height="20" VerticalAlignment="Top" Fill="Transparent" />
+    </Grid>
 </Window>
