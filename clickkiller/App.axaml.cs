@@ -19,7 +19,7 @@ namespace clickkiller;
 
 public partial class App : Application
 {
-    public ILogger Logger { get; }
+    public ILogger Logger { get; set; }
     private WindowIcon? _trayIcon;
     
     private MainWindow? _mainWindow;
@@ -29,11 +29,6 @@ public partial class App : Application
     public static void ExitApplication()
     {
         Environment.Exit(0);
-    }
-
-    public App(ILogger logger)
-    {
-        Logger = logger;
     }
 
     public override void Initialize()
