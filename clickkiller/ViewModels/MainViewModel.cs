@@ -103,7 +103,8 @@ namespace clickkiller.ViewModels
             {
                 bool showDate = !lastDate.HasValue || issue.Timestamp.Date != lastDate.Value.Date;
                 int duplicateCount = _databaseService.GetDuplicateCount(issue.Id);
-                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes, duplicateCount));
+                DateTime mostRecentTimestamp = _databaseService.GetMostRecentTimestamp(issue.Id);
+                issueViewModels.Add(new IssueViewModel(issue, showDate, Notes, duplicateCount, mostRecentTimestamp));
                 lastDate = issue.Timestamp;
             }
 
@@ -142,7 +143,9 @@ namespace clickkiller.ViewModels
 
         public int DuplicateCount { get; }
 
-        public IssueViewModel(Issue issue, bool showDate, string highlightText, int duplicateCount)
+        public DateTime MostRecentTimestamp { get; }
+
+        public IssueViewModel(Issue issue, bool showDate, string highlightText, int duplicateCount, DateTime mostRecentTimestamp)
         {
             Id = issue.Id;
             Timestamp = issue.Timestamp;
@@ -153,6 +156,8 @@ namespace clickkiller.ViewModels
             HighlightText = highlightText;
             IsDuplicate = issue.DuplicateOf.HasValue;
             DuplicateCount = duplicateCount;
+            MostRecentTimestamp = mostRecentTimestamp;
+
         }
     }
 }

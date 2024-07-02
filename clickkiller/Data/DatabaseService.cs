@@ -183,6 +183,27 @@ namespace clickkiller.Data
             return Convert.ToInt32(command.ExecuteScalar());
         }
 
+        public DateTime GetMostRecentTimestamp(int id)
+        {
+            using var connection = new SqliteConnection(ConnectionString);
+            connection.Open();
+
+            var command = connection.CreateCommand();
+            command.CommandText = @"
+                WITH RECURSIVE DuplicateIssues AS (
+                    SELECT Id, Timestamp, DuplicateOf FROM Issues WHERE Id = $id
+                    UNION ALL
+                    SELECT i.Id, i.Timestamp, i.DuplicateOf
+                    FROM Issues i
+                    INNER JOIN DuplicateIssues di ON i.DuplicateOf = di.Id
+                )
+                SELECT MAX(Timestamp) FROM DuplicateIssues
+            ";
+            command.Parameters.AddWithValue("$id", id);
+
+            return DateTime.Parse(command.ExecuteScalar().ToString());
+        }
+
         public void DeleteIssue(int id)
         {
             using var connection = new SqliteConnection(ConnectionString);
