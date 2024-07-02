@@ -31,10 +31,13 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        if (IsNotRunning()) {
+        if (IsNotRunning())
+        {
             Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
-        } else {
+        }
+        else
+        {
             Log?.LogError("Exiting now because the app is probably already running.");
             Environment.Exit(0);
         }
