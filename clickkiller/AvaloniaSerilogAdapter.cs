@@ -1,9 +1,23 @@
-﻿using Avalonia.Logging;
+﻿using Avalonia;
+using Avalonia.Logging;
 using Microsoft.Extensions.Logging;
 using System;
 
 namespace clickkiller
 {
+
+
+    // public static class MyLogExtensions
+    // {
+    //     public static AppBuilder LogToMySink(this AppBuilder builder, ILogSink?  logger,
+    //         LogEventLevel level = LogEventLevel.Warning,
+    //         params string[] areas)
+    //     {
+    //         Logger.Sink = logger;
+    //         return builder;
+    //     }
+    // }
+    
     public class AvaloniaLoggingAdapter : ILogSink
     {
         private readonly ILogger _logger;

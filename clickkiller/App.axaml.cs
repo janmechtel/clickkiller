@@ -36,6 +36,7 @@ public partial class App : Application
         if (IsNotRunning()) {
             Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
+            // Logger.LogInformation("Starting app");
         } else {
             Logger.LogInformation("Exiting now because the app is probably already running.");
             Environment.Exit(0);
