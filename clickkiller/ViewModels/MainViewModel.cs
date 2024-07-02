@@ -137,6 +137,7 @@ namespace clickkiller.ViewModels
         public bool ShowDate { get; }
         public bool IsDone { get; }
         public string HighlightText { get; }
+        public bool IsDuplicate { get; }
 
         public IssueViewModel(Issue issue, bool showDate, string highlightText)
         {
@@ -147,6 +148,7 @@ namespace clickkiller.ViewModels
             ShowDate = showDate;
             IsDone = issue.IsDone;
             HighlightText = highlightText;
+            IsDuplicate = issue.DuplicateOf.HasValue;
         }
     }
 }

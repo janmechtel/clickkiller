@@ -150,7 +150,7 @@ namespace clickkiller.Data
             command.CommandText = @"
                 SELECT Id, Timestamp, Application, Notes, IsDone, DuplicateOf
                 FROM Issues 
-                WHERE Application LIKE $applicationFilter
+                WHERE Application LIKE $applicationFilter AND DuplicateOf IS NULL
                 ORDER BY Timestamp DESC";
             command.Parameters.AddWithValue("$applicationFilter", $"%{applicationFilter}%");
 
