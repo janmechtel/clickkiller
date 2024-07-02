@@ -22,7 +22,6 @@ namespace clickkiller.ViewModels
         public ICommand FocusNotesCommand { get; }
         public ICommand DeleteIssueCommand { get; }
         public ICommand ToggleIssueDoneStatusCommand { get; }
-        public ICommand ShowTrayIconCommand { get; }
         public ICommand UpdateCommand { get; }
         public ICommand DuplicateIssueCommand { get; }
 
@@ -34,7 +33,6 @@ namespace clickkiller.ViewModels
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
-            ShowTrayIconCommand = ReactiveCommand.Create(ShowTrayIcon);
             UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
             DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             RefreshIssues();
@@ -44,12 +42,6 @@ namespace clickkiller.ViewModels
                 .Subscribe(_ => RefreshIssues());
         }
 
-        private void ShowTrayIcon()
-        {
-            // Implementation for showing the tray icon
-            // This will depend on how your tray icon is implemented
-            // You might need to call a method from your App class or a TrayIcon service
-        }
 
         public bool FocusNotes
         {
