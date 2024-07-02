@@ -103,6 +103,11 @@ namespace clickkiller.Data
             using var connection = new SqliteConnection(ConnectionString);
             connection.Open();
 
+            if (duplicateOf.HasValue)
+            {
+                duplicateOf = GetRootDuplicateId(connection, duplicateOf.Value);
+            }
+
             var command = connection.CreateCommand();
             command.CommandText =
             @"
@@ -116,6 +121,22 @@ namespace clickkiller.Data
             command.Parameters.AddWithValue("$duplicateOf", duplicateOf.HasValue ? duplicateOf.Value : DBNull.Value);
 
             command.ExecuteNonQuery();
+        }
+
+        private int GetRootDuplicateId(SqliteConnection connection, int duplicateId)
+        {
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT DuplicateOf FROM Issues WHERE Id = $id";
+            command.Parameters.AddWithValue("$id", duplicateId);
+
+            var result = command.ExecuteScalar();
+
+            if (result != null && result != DBNull.Value)
+            {
+                return GetRootDuplicateId(connection, Convert.ToInt32(result));
+            }
+
+            return duplicateId;
         }
 
         public List<Issue> GetAllIssues(string applicationFilter = "")
