@@ -22,6 +22,6 @@
             <views:MainView HorizontalAlignment="Center"
                             VerticalAlignment="Center" />
         </DockPanel>
-        <Rectangle Name="MenuTrigger" Height="20" VerticalAlignment="Top" Fill="Transparent" />
+        <Rectangle Name="MenuTrigger" Height="20" VerticalAlignment="Top" Fill="Transparent"/>
     </Grid>
 </Window>

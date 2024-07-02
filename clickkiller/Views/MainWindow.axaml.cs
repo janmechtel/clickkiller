@@ -40,10 +40,10 @@ public partial class MainWindow : Window
 
     private void MainMenu_PointerLeave(object? sender, PointerEventArgs e)
     {
-        if (_mainMenu != null && !_mainMenu.IsPointerOver && _menuTrigger != null && !_menuTrigger.IsPointerOver)
-        {
-            _mainMenu.IsVisible = false;
-        }
+        // if (_mainMenu != null && !_mainMenu.IsPointerOver && _menuTrigger != null && !_menuTrigger.IsPointerOver)
+        // {
+        //     _mainMenu.IsVisible = false;
+        // }
     }
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
