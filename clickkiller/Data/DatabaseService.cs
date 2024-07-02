@@ -20,7 +20,7 @@ namespace clickkiller.Data
     public class DatabaseService
     {
         private readonly string ConnectionString;
-        private const int CurrentVersion = 1;
+        private const int CurrentVersion = 2;
 
         public DatabaseService(string appDataPath)
         {
@@ -76,7 +76,8 @@ namespace clickkiller.Data
         {
             var migrations = new List<IMigration>
             {
-                new AddIsDoneColumnMigration()
+                new AddIsDoneColumnMigration(),
+                new AddDuplicateOfColumnMigration()
             };
 
             foreach (var migration in migrations.OrderBy(m => m.Version))
