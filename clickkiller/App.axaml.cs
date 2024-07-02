@@ -126,7 +126,7 @@ public partial class App : Application
     }
 
 
-    private static async Task UpdateApp()
+    public static async Task UpdateApp()
     {
         Log?.LogInformation("Updating app");
         try

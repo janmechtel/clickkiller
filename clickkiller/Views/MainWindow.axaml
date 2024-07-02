@@ -14,7 +14,7 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Update" />
+                <MenuItem Header="_Update" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateCommand}" />
                 <MenuItem Header="_Exit" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}" />
             </MenuItem>
         </Menu>

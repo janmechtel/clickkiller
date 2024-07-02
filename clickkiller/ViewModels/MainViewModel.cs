@@ -23,6 +23,7 @@ namespace clickkiller.ViewModels
         public ICommand DeleteIssueCommand { get; }
         public ICommand ToggleIssueDoneStatusCommand { get; }
         public ICommand ShowTrayIconCommand { get; }
+        public ICommand UpdateCommand { get; }
 
         public MainViewModel(string appDataPath)
         {
@@ -33,6 +34,7 @@ namespace clickkiller.ViewModels
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             ShowTrayIconCommand = ReactiveCommand.Create(ShowTrayIcon);
+            UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
             RefreshIssues();
 
             this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
