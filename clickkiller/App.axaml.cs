@@ -34,7 +34,7 @@ public partial class App : Application
     public override void Initialize()
     {
         if (IsNotRunning()) {
-            Task.Run(UpdateApp).Wait();
+            //Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
             // Logger.LogInformation("Starting app");
         } else {
