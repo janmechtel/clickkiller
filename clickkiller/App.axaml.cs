@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Velopack;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace clickkiller;
 
@@ -26,6 +27,11 @@ public partial class App : Application
     private static FileStream? _lockFile;
     public static readonly string appDataPath = GetAppPath();
 
+    public App()
+    {
+        Logger = ClickKillerContainer.ServiceProvider.GetRequiredService<ILogger>();
+    }
+
     public static void ExitApplication()
     {
         Environment.Exit(0);
@@ -34,9 +40,9 @@ public partial class App : Application
     public override void Initialize()
     {
         if (IsNotRunning()) {
-            //Task.Run(UpdateApp).Wait();
+            Logger.LogInformation("Starting app");
+            Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
-            // Logger.LogInformation("Starting app");
         } else {
             Logger.LogInformation("Exiting now because the app is probably already running.");
             Environment.Exit(0);

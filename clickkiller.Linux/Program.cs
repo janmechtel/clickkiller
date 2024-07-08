@@ -1,10 +1,12 @@
-﻿using System;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using Velopack;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using System;
 using System.IO;
+using Velopack;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace clickkiller;
 
@@ -38,17 +40,25 @@ sealed class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
-            // .LogToMySink(new AvaloniaLoggingAdapter(logger))
+            .LogToILogger(logger)
             .UsePlatformDetect()
             .WithInterFont()
             .UseReactiveUI()
-            .AfterSetup(builder =>
+            .AfterPlatformServicesSetup(builder =>
             {
-                if (builder.Instance is not null) {
-                    var app = (App)builder.Instance;
-                    app.Logger = logger;
-                }
+                ClickKillerContainer.Initialize(AddServices());
             });
+
+    public static ServiceCollection AddServices()
+    {
+        var collection = new ServiceCollection();
+
+        //register all the things you want to inject here
+
+        collection.AddSingleton<ILogger>(logger);
+
+        return collection;
+    }
 
     static ILogger<Program> CreateLogger()
     {
