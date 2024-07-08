@@ -1,23 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Logging;
+using Avalonia.Utilities;
+using DynamicData.Binding;
 using Microsoft.Extensions.Logging;
+
 using System;
+using System.Text;
 
 namespace clickkiller
 {
-
-
-    // public static class MyLogExtensions
-    // {
-    //     public static AppBuilder LogToMySink(this AppBuilder builder, ILogSink?  logger,
-    //         LogEventLevel level = LogEventLevel.Warning,
-    //         params string[] areas)
-    //     {
-    //         Logger.Sink = logger;
-    //         return builder;
-    //     }
-    // }
-    
     public class AvaloniaLoggingAdapter : ILogSink
     {
         private readonly ILogger _logger;
@@ -41,7 +32,74 @@ namespace clickkiller
 
         public void Log(LogEventLevel level, string area, object? source, string messageTemplate, params object?[] propertyValues)
         {
-            throw new NotImplementedException();
+            if (!IsEnabled(level, area))
+            {
+                return;
+            }
+
+            // Log the formatted message
+            _logger.Log(MapLevel(level), Format(area, messageTemplate, source, propertyValues), source);
+        }
+
+        private static string Format(
+            string area,
+            string template,
+            object? source,
+            object?[] v)
+        {
+            var result = new StringBuilder(template.Length);
+            var r = new CharacterReader(template.AsSpan());
+            var i = 0;
+
+            result.Append('[');
+            result.Append(area);
+            result.Append(']');
+
+            while (!r.End)
+            {
+                var c = r.Take();
+
+                if (c != '{')
+                {
+                    result.Append(c);
+                }
+                else
+                {
+                    if (r.Peek != '{')
+                    {
+                        result.Append('\'');
+                        result.Append(i < v.Length ? v[i++] : null);
+                        result.Append('\'');
+                        r.TakeUntil('}');
+                        r.Take();
+                    }
+                    else
+                    {
+                        result.Append('{');
+                        r.Take();
+                    }
+                }
+            }
+
+            FormatSource(source, result);
+            return result.ToString();
+        }
+
+        private static void FormatSource(object? source, StringBuilder result)
+        {
+            if (source is null)
+                return;
+
+            result.Append(" (");
+            result.Append(source.GetType().Name);
+            result.Append(" #");
+
+            if (source is StyledElement se && se.Name is not null)
+                result.Append(se.Name);
+            else
+                result.Append(source.GetHashCode());
+
+            result.Append(')');
         }
 
         private LogLevel MapLevel(LogEventLevel level)
