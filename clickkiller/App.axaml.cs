@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Logging;
 using clickkiller.ViewModels;
 using clickkiller.Views;
 using Avalonia.Controls;
@@ -13,16 +14,23 @@ using System.Threading.Tasks;
 using Velopack;
 using Microsoft.Extensions.Logging;
 using System.IO;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace clickkiller;
 
 public partial class App : Application
 {
-    public static MemoryLogger? Log { get; private set; } = new MemoryLogger();
+    public ILogger Logger { get; set; }
     private WindowIcon? _trayIcon;
+    
     private MainWindow? _mainWindow;
     private static FileStream? _lockFile;
-    private static readonly string _appDataPath = GetAppPath();
+    public static readonly string appDataPath = GetAppPath();
+
+    public App()
+    {
+        Logger = ClickKillerContainer.ServiceProvider.GetRequiredService<ILogger>();
+    }
 
     public static void ExitApplication()
     {
@@ -31,14 +39,12 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        if (IsNotRunning())
-        {
+        if (IsNotRunning()) {
+            Logger.LogInformation("Starting app");
             Task.Run(UpdateApp).Wait();
             AvaloniaXamlLoader.Load(this);
-        }
-        else
-        {
-            Log?.LogError("Exiting now because the app is probably already running.");
+        } else {
+            Logger.LogInformation("Exiting now because the app is probably already running.");
             Environment.Exit(0);
         }
     }
@@ -81,7 +87,7 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(_appDataPath)
+                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp)
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
@@ -129,13 +135,11 @@ public partial class App : Application
     }
 
 
-    public static async Task UpdateApp()
+    public async Task UpdateApp()
     {
-        Log?.LogInformation("Updating app");
+        Logger.LogInformation("Updating app");
         try
         {
-
-
             var mgr = new UpdateManager("/home/janmechtel/Projects/ck/clickkiller/clickkiller.Linux/releases");
 
             // check for new version
@@ -151,16 +155,16 @@ public partial class App : Application
         }
         catch (Exception ex)
         {
-            Log?.LogError(ex.Message);
+            Logger.LogError(ex.Message);
         }
     }
 
-    private static bool IsNotRunning()
+    private bool IsNotRunning()
     {
 
         if (OperatingSystem.IsLinux() || OperatingSystem.IsWindows())
         {
-            string lockFilePath = Path.Combine(_appDataPath, ".lock");
+            string lockFilePath = Path.Combine(appDataPath, ".lock");
             try
             {
                 // check platform to be linux or windows
@@ -170,7 +174,7 @@ public partial class App : Application
             }
             catch
             {
-                Log?.LogError("Could not lock file {lockFilePath}.", lockFilePath);
+                Logger.LogError("Could not lock file {lockFilePath}.", lockFilePath);
                 return false;
             }
         }
