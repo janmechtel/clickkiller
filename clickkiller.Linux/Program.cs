@@ -1,16 +1,18 @@
-﻿using System;
-using System.Threading.Tasks;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.ReactiveUI;
-using Velopack;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using Serilog;
+using System;
+using System.IO;
+using Velopack;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace clickkiller;
 
 sealed class Program
 {
-    public static MemoryLogger Log { get; private set; } = new MemoryLogger();
+    public static ILogger<Program> logger { get; private set; } = CreateLogger();
 
     // Initialization code. Don't use any Avalonia, third-party APIs or any
     // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
@@ -23,14 +25,13 @@ sealed class Program
             // It's important to Run() the VelopackApp as early as possible in app startup.
             VelopackApp.Build()
                 .WithFirstRun((v) => { /* Your first run code here */ })
-                .Run(Log);
-
+                .Run(logger);
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
         }
         catch (Exception ex)
         {
             string message = "Unhandled exception: " + ex.ToString();
-            Log.LogError(message);
+            logger.LogError(message);
             Console.WriteLine(message);
             throw;
         }
@@ -39,8 +40,35 @@ sealed class Program
     // Avalonia configuration, don't remove; also used by visual designer.
     public static AppBuilder BuildAvaloniaApp()
         => AppBuilder.Configure<App>()
+            .LogToILogger(logger)
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace()
-            .UseReactiveUI();
+            .UseReactiveUI()
+            .AfterPlatformServicesSetup(builder =>
+            {
+                ClickKillerContainer.Initialize(AddServices());
+            });
+
+    public static ServiceCollection AddServices()
+    {
+        var collection = new ServiceCollection();
+
+        //register all the things you want to inject here
+
+        collection.AddSingleton<ILogger>(logger);
+
+        return collection;
+    }
+
+    static ILogger<Program> CreateLogger()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddSerilog(new LoggerConfiguration()
+                .WriteTo.File(Path.Combine(App.appDataPath, "clickkiller.txt"), rollingInterval: RollingInterval.Day, flushToDiskInterval: TimeSpan.Zero)
+                .WriteTo.Console()
+                .CreateLogger(), dispose: true);
+        });
+        return loggerFactory.CreateLogger<Program>();
+    }
 }

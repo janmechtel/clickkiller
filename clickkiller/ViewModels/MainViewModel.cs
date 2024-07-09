@@ -5,6 +5,8 @@ using System.Linq;
 using ReactiveUI;
 using clickkiller.Data;
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace clickkiller.ViewModels
 {
@@ -25,15 +27,15 @@ namespace clickkiller.ViewModels
         public ICommand UpdateCommand { get; }
         public ICommand DuplicateIssueCommand { get; }
 
-        public MainViewModel(string appDataPath)
+        public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication)
         {
             _databaseService = new DatabaseService(appDataPath);
-            ExitCommand = ReactiveCommand.Create(App.ExitApplication);
+            ExitCommand = ReactiveCommand.Create(exitApplication);
             SaveCommand = ReactiveCommand.Create(SaveIssue);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
-            UpdateCommand = ReactiveCommand.CreateFromTask(App.UpdateApp);
+            UpdateCommand = ReactiveCommand.CreateFromTask(updateApplication);
             DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             RefreshIssues();
 
