@@ -11,45 +11,46 @@
              x:DataType="vm:MainViewModel">
     <UserControl.Resources>
         <converters:HighlightTextConverter x:Key="HighlightTextConverter" />
+        <converters:CountConverter x:Key="CountConverter" />
     </UserControl.Resources>
     <Design.DataContext>
         <vm:MainViewModel />
     </Design.DataContext>
-    <StackPanel Margin="10">
-        <TextBox Name="ApplicationTextBox"
-                 Text="{Binding Application}"
-                 Watermark="Application"
-                 Margin="0,0,0,10">
-            <TextBox.KeyBindings>
-                <KeyBinding Gesture="Enter"
-                            Command="{Binding FocusNotesCommand}" />
-            </TextBox.KeyBindings>
-        </TextBox>
-        <TextBox Name="NotesTextBox"
-                 Text="{Binding Notes}"
-                 Watermark="Notes"
-                 Height="100"
-                 AcceptsReturn="True"
-                 TextWrapping="Wrap"
-                 Margin="0,0,0,10">
-            <TextBox.KeyBindings>
-                <KeyBinding Gesture="Ctrl+Enter"
-                            Command="{Binding SaveCommand}" />
-            </TextBox.KeyBindings>
-        </TextBox>
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+    <Grid RowDefinitions="25*,25*,50*">
+        <StackPanel Grid.Row="1"
+                    Margin="10">
+            <TextBox Name="ApplicationTextBox"
+                     Text="{Binding Application}"
+                     Watermark="Application"
+                     Margin="0,0,0,10">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter"
+                                Command="{Binding FocusNotesCommand}" />
+                </TextBox.KeyBindings>
+            </TextBox>
+            <TextBox Name="NotesTextBox"
+                     Text="{Binding Notes}"
+                     Watermark="Notes"
+                     Height="100"
+                     AcceptsReturn="True"
+                     TextWrapping="Wrap"
+                     Margin="0,0,0,10">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Ctrl+Enter"
+                                Command="{Binding SaveCommand}" />
+                </TextBox.KeyBindings>
+            </TextBox>
             <Button Content="Save Issue"
                     Command="{Binding SaveCommand}"
                     HorizontalAlignment="Left"
-                    Margin="0,0,10,0" />
-            <Button Content="Show Tray Icon"
-                    Command="{Binding ShowTrayIconCommand}"
-                    HorizontalAlignment="Left" />
+                    Margin="0,0,0,20" />
         </StackPanel>
         <DataGrid Name="IssuesDataGrid"
                   ItemsSource="{Binding Issues}"
                   AutoGenerateColumns="False"
-                  IsReadOnly="True">
+                  IsReadOnly="True"
+                  Grid.Row="2"
+                  VerticalAlignment="Stretch">
             <DataGrid.Columns>
                 <DataGridTemplateColumn Header="Timestamp">
                     <DataGridTemplateColumn.CellTemplate>
@@ -58,10 +59,10 @@
                                 <StackPanel Orientation="Horizontal"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:yyyy-MM-dd}}"
+                                    <TextBlock Text="{Binding MostRecentTimestamp, StringFormat={}{0:yyyy-MM-dd}}"
                                                IsVisible="{Binding ShowDate}"
                                                Margin="0,0,5,0" />
-                                    <TextBlock Text="{Binding Timestamp, StringFormat={}{0:HH:mm}}" />
+                                    <TextBlock Text="{Binding MostRecentTimestamp, StringFormat={}{0:HH:mm}}" />
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
@@ -111,6 +112,15 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Count">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DuplicateCount, Converter={StaticResource CountConverter}}"
+                                       VerticalAlignment="Center"
+                                       Margin="5,0,5,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Actions">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
@@ -126,6 +136,12 @@
                                         Command="{Binding ((vm:MainViewModel)DataContext).DeleteIssueCommand, ElementName=IssuesDataGrid}"
                                         CommandParameter="{Binding}"
                                         Width="30"
+                                        Height="30"
+                                        Margin="0,0,5,0" />
+                                <Button Content="+1"
+                                        Command="{Binding ((vm:MainViewModel)DataContext).DuplicateIssueCommand, ElementName=IssuesDataGrid}"
+                                        CommandParameter="{Binding}"
+                                        Width="30"
                                         Height="30" />
                             </StackPanel>
                         </DataTemplate>
@@ -133,5 +149,5 @@
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-    </StackPanel>
+    </Grid>
 </UserControl>

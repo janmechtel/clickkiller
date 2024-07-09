@@ -1,14 +1,14 @@
 # The BTTN
 
-The BTTN is a giant “HELP” button that you can press whenever software tools are in your way instead of being helpful. 
+The BTTN is a giant “HELP” buzzer for whenever software tools are in your way instead of being helpful. 
 
 ## How to use it
 
 1. Press the button
-2. Describe your problem
+2. Take some notes 
 3. Get back to work 
 
-## Examples 
+## Examples
 
 - “I’m googling my bank account website several times a month, I should research a better way to handle my bookmarks.”
 - “Maybe I should add this programm to auto-run on each startup, I wonder how i do that. But I shouldn’t do it right now, I’m in the middle of something urgent”
@@ -16,11 +16,11 @@ The BTTN is a giant “HELP” button that you can press whenever software tools
 
 ## Benefits
 
-- Get help - from your colleagues, the community or Artificial Intelligence
 - Avoid the distraction - Make a note instead of distracting yourself by acting right now
 - Don’t forget about it - allow yourself to prioritze it later
+- Get help - from your colleagues, the community or Artificial Intelligence
 
-Click Killer provides a fast way to get the nuisance out of your head and sidesteps the dillema of acting either “now” or “never”.
+The BTTN provides a fast way to get the nuisance out of your head and sidesteps the dillema of acting either “now” or “never”.
 
 ## Download
 
@@ -39,48 +39,30 @@ Click Killer provides a fast way to get the nuisance out of your head and sidest
     - I love automation and helping people being more productive. 
     - I want my clients & friends to have a faster way to reach out with their problems 💚
 
-
 # Test
 
 dotnet build
 dotnet run
-dotnet publish --runtime win-x64 --configuration Release  -p:PublishSingleFile=true -p:PublishTrimmed=true --self-contained true`
-dotnet publish -c Release -r linux-x64 --self-contained
+./clickkiller.Linux/build-linux.sh
 
-# Background
-
-I want to build a software tool that is useful to the productivity crowd think management consultants, software developers, product owner etc. People who would also enjoy ProductHunt. Keyboard shortcuts and so on.
-
-At the moment it's a bit hard to describe what the tool will do.
-
-Therefore I want to have an exagerated play on this "omnious" button. 
-
-For example
-- Landing Page: Don't ask what the button can do, ask what it can not do.
-- Offer a physical buzzer button with USB for $99 (nobody needs to buy it but it adds to the "over the top" comic appeal)
-
-- Visually it can be a bit "in your face" not too serious too
-
-
-Can you expand this concept and add some ideas?
-
-Goals:
+# Goals:
 
 1. I use it and I find it useful
-2. I have 1 new user per week
+2. A friend of mine also finds it useful (regular use + shares problems with me + refers other users)
 3. I do more interviews
 
+Who are my ideal users? PowerUsers = demanding
+Less frequent = less demanding, but also they use it less
 
-What are my ideal users? PowerUsers = demanding
-Less frequent = less demanding, less use?
-
-WHY? 
+# Why
 > creates a dialog, a stream of annoyances
 > it's a basis from where i can offer more things / experiment
 > I can sollicit feedack
 
 # Roadmap
 
-- [ ] Simple Backend
-- [ ] Frontend
-- [ ] Installer 
+- [X] Simple Backend - sqlite
+- [X] Frontend - Avalonia
+- [ ] Installer - Velopack
+- [ ] Detect the current app
+- [ ] Share issues to a friend
