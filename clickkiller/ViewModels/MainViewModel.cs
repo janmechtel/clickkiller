@@ -27,6 +27,13 @@ namespace clickkiller.ViewModels
         public ICommand UpdateCommand { get; }
         public ICommand DuplicateIssueCommand { get; }
 
+        private string _updateMenuItemLabel;
+        public string UpdateMenuItemLabel
+        {
+            get => _updateMenuItemLabel;
+            set => this.RaiseAndSetIfChanged(ref _updateMenuItemLabel, value);
+        }
+
         public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication)
         {
             _databaseService = new DatabaseService(appDataPath);
