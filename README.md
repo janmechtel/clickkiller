@@ -1,4 +1,4 @@
-# The BTTN
+# The Clickkiller BTTN
 
 The BTTN is a giant “HELP” buzzer for whenever software tools are in your way instead of being helpful. 
 
@@ -24,7 +24,11 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 
 ## Download
 
-(coming soon)
+- Linux: [Clickkiller.AppImage](https://storage.googleapis.com/clickkiller/Clickkiller.AppImage)
+- Windows: [Clickkiller-win-stable-Setup.exe](https://storage.googleapis.com/clickkiller/Clickkiller-win-stable-Setup.exe)
+
+
+
    
 ## FAQ
 - Why not use my TODO App? 
@@ -51,8 +55,9 @@ dotnet run
 2. A friend of mine also finds it useful (regular use + shares problems with me + refers other users)
 3. I do more interviews
 
-Who are my ideal users? PowerUsers = demanding
-Less frequent = less demanding, but also they use it less
+Who are my ideal users? 
+- PowerUsers = demanding
+- Less frequent = less demanding, but also they use it less
 
 # Why
 > creates a dialog, a stream of annoyances
@@ -63,6 +68,6 @@ Less frequent = less demanding, but also they use it less
 
 - [X] Simple Backend - sqlite
 - [X] Frontend - Avalonia
-- [ ] Installer - Velopack
-- [ ] Detect the current app
+- [X] Installer - Velopack
 - [ ] Share issues to a friend
+- [ ] Detect the current app
