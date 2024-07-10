@@ -140,7 +140,7 @@ public partial class App : Application
         Logger.LogInformation("Updating app");
         try
         {
-            var mgr = new UpdateManager("/home/janmechtel/Projects/ck/clickkiller/clickkiller.Linux/releases");
+            var mgr = new UpdateManager("https://storage.googleapis.com/clickkiller/");
 
             // check for new version
             var newVersion = await mgr.CheckForUpdatesAsync();
