@@ -6,6 +6,7 @@ using Serilog;
 using System;
 using System.IO;
 using Velopack;
+using Velopack.Windows;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace clickkiller.Windows;
@@ -22,10 +23,14 @@ sealed class Program
     {
         try
         {
+
+#pragma warning disable CA1416 // Validate platform compatibility
             // It's important to Run() the VelopackApp as early as possible in app startup.
             VelopackApp.Build()
-                .WithFirstRun((v) => { /* Your first run code here */ })
-                .Run(logger);
+                    .WithAfterInstallFastCallback((v) => new Shortcuts().CreateShortcutForThisExe(ShortcutLocation.Startup))
+                    .WithFirstRun((v) => { /* Your first run code here */ })
+                    .Run(logger);
+#pragma warning restore CA1416 // Validate platform compatibility
 
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
             Avalonia.Logging.Logger.Sink = new AvaloniaLoggingAdapter(logger);
