@@ -13,6 +13,7 @@ fi
 BUILD_VERSION="$1"
 RELEASE_DIR="$SCRIPT_DIR/../releases"
 PUBLISH_DIR="$SCRIPT_DIR/../publish-win"
+ICON=$SCRIPT_DIR/../clickkiller/Assets/clickkiller.ico
 CHANNEL="win-stable"
 
 echo ""
@@ -21,4 +22,5 @@ dotnet publish -c Release --self-contained -r win-x64 -o "$PUBLISH_DIR"
 
 echo ""
 echo "Building Velopack Release v$BUILD_VERSION"
-vpk "[win]" pack -u Clickkiller -v $BUILD_VERSION -o "$RELEASE_DIR" -p "$PUBLISH_DIR" -c "$CHANNEL" --mainExe clickkiller.Windows.exe
+echo $ICON
+vpk "[win]" pack -u Clickkiller -v $BUILD_VERSION -o "$RELEASE_DIR" -p "$PUBLISH_DIR" -c "$CHANNEL" --mainExe clickkiller.Windows.exe --icon "$ICON"
