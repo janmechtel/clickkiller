@@ -26,10 +26,12 @@ public partial class App : Application
     private MainWindow? _mainWindow;
     private static FileStream? _lockFile;
     public static readonly string appDataPath = GetAppPath();
+    private UpdateManager _updateManager;
 
     public App()
     {
         Logger = ClickKillerContainer.ServiceProvider.GetRequiredService<ILogger>();
+        _updateManager = new UpdateManager("https://storage.googleapis.com/clickkiller/");
     }
 
     public static void ExitApplication()
@@ -76,10 +78,11 @@ public partial class App : Application
             exitMenuItem.Click += (sender, args) => ExitApplication();
             contextMenu.Items.Add(exitMenuItem);
 
-            var updateMenuItem = new NativeMenuItem("Update");
-            updateMenuItem.Click += (sender, args) =>
+            var currentVersion = _updateManager.CurrentVersion;
+            var updateMenuItem = new NativeMenuItem($"Update (Current: {currentVersion})");
+            updateMenuItem.Click += async (sender, args) =>
             {
-                Task.Run(UpdateApp).Wait();
+                await UpdateApp();
             };
             contextMenu.Items.Add(updateMenuItem);
 
@@ -140,22 +143,23 @@ public partial class App : Application
         Logger.LogInformation("Updating app");
         try
         {
-            var mgr = new UpdateManager("https://storage.googleapis.com/clickkiller/");
-
             // check for new version
-            var newVersion = await mgr.CheckForUpdatesAsync();
+            var newVersion = await _updateManager.CheckForUpdatesAsync();
             if (newVersion == null)
+            {
+                Logger.LogInformation("No update available");
                 return; // no update available
+            }
 
             // download new version
-            await mgr.DownloadUpdatesAsync(newVersion);
+            await _updateManager.DownloadUpdatesAsync(newVersion);
 
             // install new version and restart app
-            mgr.ApplyUpdatesAndRestart(newVersion);
+            _updateManager.ApplyUpdatesAndRestart(newVersion);
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex.Message);
+            Logger.LogError(ex, "Error during update process");
         }
     }
 
