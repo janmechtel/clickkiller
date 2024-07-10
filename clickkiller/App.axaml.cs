@@ -79,12 +79,19 @@ public partial class App : Application
             contextMenu.Items.Add(exitMenuItem);
 
             var currentVersion = _updateManager.CurrentVersion;
-            var updateMenuItem = new NativeMenuItem($"Update (Current: {currentVersion})");
+            var updateMenuItemLabel = $"Update (Current: {currentVersion})";
+            var updateMenuItem = new NativeMenuItem(updateMenuItemLabel);
             updateMenuItem.Click += async (sender, args) =>
             {
                 await UpdateApp();
             };
             contextMenu.Items.Add(updateMenuItem);
+
+            // Store the label for use in the file menu
+            if (_mainWindow != null && _mainWindow.DataContext is MainViewModel viewModel)
+            {
+                viewModel.UpdateMenuItemLabel = updateMenuItemLabel;
+            }
 
             trayIcon.Menu = contextMenu;
 
