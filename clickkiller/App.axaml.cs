@@ -51,8 +51,8 @@ public partial class App : Application
 
     private void OnKeyReleased(object? sender, KeyboardHookEventArgs e)
     {
-        // Global Shortcut for F1
-        if (e.Data.KeyCode == KeyCode.VcF1)
+        // Global Shortcut for Alt+F1
+        if (e.Data.KeyCode == KeyCode.VcF1 && e.RawEvent.Mask.HasAlt())
         {
             TriggerReport();
         }
