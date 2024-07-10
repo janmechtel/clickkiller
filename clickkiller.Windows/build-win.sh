@@ -22,5 +22,11 @@ dotnet publish -c Release --self-contained -r win-x64 -o "$PUBLISH_DIR"
 
 echo ""
 echo "Building Velopack Release v$BUILD_VERSION"
-echo $ICON
 vpk "[win]" pack -u Clickkiller -v $BUILD_VERSION -o "$RELEASE_DIR" -p "$PUBLISH_DIR" -c "$CHANNEL" --mainExe clickkiller.Windows.exe --icon "$ICON"
+
+echo ""
+echo "Uploading Velopack Releases"
+#vpk upload github --repoUrl https://github.com/janmechtel/clickkiller/ --publish --releaseName "ClickKiler Windows $BUILD_VERSION" --tag v$BUILD_VERSION -o "$RELEASE_DIR" --token 
+gsutil -m cp -n $RELEASE_DIR/*.nupkg gs://clickkiller/ # -n skip existing files
+gsutil -m cp $RELEASE_DIR/*.json $RELEASE_DIR/RELEASES-* $RELEASE_DIR/*.exe $RELEASE_DIR/*.zip gs://clickkiller/
+
