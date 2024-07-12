@@ -34,7 +34,7 @@ namespace clickkiller.ViewModels
             set => this.RaiseAndSetIfChanged(ref _updateMenuItemLabel, value);
         }
 
-        public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication)
+        public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication, string updateMenuItemLabel)
         {
             _databaseService = new DatabaseService(appDataPath);
             ExitCommand = ReactiveCommand.Create(exitApplication);
@@ -44,6 +44,7 @@ namespace clickkiller.ViewModels
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
             UpdateCommand = ReactiveCommand.CreateFromTask(updateApplication);
             DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
+            UpdateMenuItemLabel = updateMenuItemLabel;
             RefreshIssues();
 
             this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)

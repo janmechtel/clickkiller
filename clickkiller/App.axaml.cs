@@ -79,7 +79,7 @@ public partial class App : Application
             contextMenu.Items.Add(exitMenuItem);
 
             var currentVersion = _updateManager.CurrentVersion;
-            var updateMenuItemLabel = $"Update (Current: {currentVersion})";
+            var updateMenuItemLabel = $"Update (Current: {currentVersion?.ToString() ?? "not installed"})";
             var updateMenuItem = new NativeMenuItem(updateMenuItemLabel);
             updateMenuItem.Click += async (sender, args) =>
             {
@@ -87,17 +87,11 @@ public partial class App : Application
             };
             contextMenu.Items.Add(updateMenuItem);
 
-            // Store the label for use in the file menu
-            if (_mainWindow != null && _mainWindow.DataContext is MainViewModel viewModel)
-            {
-                viewModel.UpdateMenuItemLabel = updateMenuItemLabel;
-            }
-
             trayIcon.Menu = contextMenu;
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp)
+                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp, updateMenuItemLabel)
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
