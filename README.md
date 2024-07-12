@@ -45,9 +45,11 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 
 # Test
 
+``` 
 dotnet build
 dotnet run
-./clickkiller.Linux/build-linux.sh
+./clickkiller.Linux/build-linux.sh 0.0.xx
+``` 
 
 # Goals:
 
