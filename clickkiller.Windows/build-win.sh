@@ -12,7 +12,7 @@ fi
 
 BUILD_VERSION="$1"
 RELEASE_DIR="$SCRIPT_DIR/../releases"
-PUBLISH_DIR="$SCRIPT_DIR/../publish-win"
+PUBLISH_DIR="$SCRIPT_DIR/publish"
 ICON=$SCRIPT_DIR/../clickkiller/Assets/clickkiller.ico
 CHANNEL="win-stable"
 
@@ -27,6 +27,7 @@ vpk "[win]" pack -u Clickkiller -v $BUILD_VERSION -o "$RELEASE_DIR" -p "$PUBLISH
 echo ""
 echo "Uploading Velopack Releases"
 #vpk upload github --repoUrl https://github.com/janmechtel/clickkiller/ --publish --releaseName "ClickKiler Windows $BUILD_VERSION" --tag v$BUILD_VERSION -o "$RELEASE_DIR" --token 
-gsutil -m cp -n $RELEASE_DIR/*.nupkg gs://clickkiller/ # -n skip existing files
-gsutil -m cp $RELEASE_DIR/*.json $RELEASE_DIR/RELEASES-* $RELEASE_DIR/*.exe $RELEASE_DIR/*.zip gs://clickkiller/
+# -n skip existing files
+echo "gsutil -m cp -n $RELEASE_DIR/*.nupkg gs://clickkiller/"
+echo "gsutil -m cp $RELEASE_DIR/*.json $RELEASE_DIR/RELEASES-* $RELEASE_DIR/*.exe $RELEASE_DIR/*.zip gs://clickkiller/"
 
