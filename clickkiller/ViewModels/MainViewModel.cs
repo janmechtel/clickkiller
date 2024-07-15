@@ -101,15 +101,22 @@ namespace clickkiller.ViewModels
         {
             var issues = _databaseService.GetAllIssues(Application);
         
+            var filteredIssues = issues.Where(i => 
+                !i.IsDone || // Show all non-done issues
+                (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && // Show done issues only if there are search terms
+                 (i.Application.Contains(Notes, StringComparison.OrdinalIgnoreCase) || 
+                  i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
+            ).ToList();
+
             if (FilterDoneStatus.HasValue)
             {
-                issues = issues.Where(i => i.IsDone == FilterDoneStatus.Value).ToList();
+                filteredIssues = filteredIssues.Where(i => i.IsDone == FilterDoneStatus.Value).ToList();
             }
         
             var issueViewModels = new ObservableCollection<IssueViewModel>();
 
             DateTime? lastDate = null;
-            foreach (var issue in issues.OrderByDescending(i => i.Timestamp))
+            foreach (var issue in filteredIssues.OrderByDescending(i => i.Timestamp))
             {
                 bool showDate = !lastDate.HasValue || issue.Timestamp.Date != lastDate.Value.Date;
                 int duplicateCount = _databaseService.GetDuplicateCount(issue.Id);
