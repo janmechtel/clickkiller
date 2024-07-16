@@ -101,11 +101,13 @@ namespace clickkiller.ViewModels
         {
             var issues = _databaseService.GetAllIssues(Application);
         
-            var filteredIssues = issues.Where(i => 
-                !i.IsDone || // Show all non-done issues
-                (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && // Show done issues only if there are search terms
-                 (i.Application.Contains(Notes, StringComparison.OrdinalIgnoreCase) || 
-                  i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
+            var fil teredIssues = issues.Where(i => 
+                // TODO if an application is set, only show issues that match the aplication
+                // TODO if notes are set, also include "done" issues if the are matching words from the notes otherwise don't show done issues
+                // !i.IsDone || 
+                // (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && 
+                //  (i.Application.Contains(Notes, StringComparison.OrdinalIgnoreCase) || 
+                //   i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
             ).ToList();
 
             if (FilterDoneStatus.HasValue)
