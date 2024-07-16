@@ -45,6 +45,10 @@ namespace clickkiller.ViewModels
             DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             UpdateMenuItemLabel = updateMenuItemLabel;
             RefreshIssues();
+            this.WhenAnyValue(x => x.Application, x => x.Notes)
+                .Throttle(TimeSpan.FromMilliseconds(300))
+                .Subscribe(_ => RefreshIssues());
+
         }
 
 
@@ -90,11 +94,15 @@ namespace clickkiller.ViewModels
         {
             var issues = _databaseService.GetAllIssues(Application);
         
+            var noteWords = !string.IsNullOrWhiteSpace(Notes) 
+                ? Notes.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                : Array.Empty<string>();
+
             var filteredIssues = issues.Where(i => 
                 (string.IsNullOrWhiteSpace(Application) || i.Application.Equals(Application, StringComparison.OrdinalIgnoreCase)) &&
                 (!i.IsDone || 
-                 (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && 
-                   i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
+                 (i.IsDone && noteWords.Any() && 
+                  noteWords.Any(word => i.Notes.Contains(word, StringComparison.OrdinalIgnoreCase))))
             ).ToList();
         
             var issueViewModels = new ObservableCollection<IssueViewModel>();
