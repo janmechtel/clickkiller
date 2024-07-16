@@ -17,7 +17,6 @@ namespace clickkiller.ViewModels
         private string _notes = string.Empty;
         private ObservableCollection<IssueViewModel> _issues = new ObservableCollection<IssueViewModel>();
         private bool _focusNotes;
-        private bool? _filterDoneStatus;
 
         public ICommand ExitCommand { get; }
         public ICommand SaveCommand { get; }
@@ -46,10 +45,6 @@ namespace clickkiller.ViewModels
             DuplicateIssueCommand = ReactiveCommand.Create<IssueViewModel>(DuplicateIssue);
             UpdateMenuItemLabel = updateMenuItemLabel;
             RefreshIssues();
-
-            this.WhenAnyValue(x => x.Application, x => x.FilterDoneStatus)
-                .Throttle(TimeSpan.FromMilliseconds(300))
-                .Subscribe(_ => RefreshIssues());
         }
 
 
@@ -75,12 +70,6 @@ namespace clickkiller.ViewModels
             }
         }
 
-        public bool? FilterDoneStatus
-        {
-            get => _filterDoneStatus;
-            set => this.RaiseAndSetIfChanged(ref _filterDoneStatus, value);
-        }
-
         public ObservableCollection<IssueViewModel> Issues
         {
             get => _issues;
@@ -101,19 +90,12 @@ namespace clickkiller.ViewModels
         {
             var issues = _databaseService.GetAllIssues(Application);
         
-            var fil teredIssues = issues.Where(i => 
-                // TODO if an application is set, only show issues that match the aplication
-                // TODO if notes are set, also include "done" issues if the are matching words from the notes otherwise don't show done issues
-                // !i.IsDone || 
-                // (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && 
-                //  (i.Application.Contains(Notes, StringComparison.OrdinalIgnoreCase) || 
-                //   i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
+            var filteredIssues = issues.Where(i => 
+                (string.IsNullOrWhiteSpace(Application) || i.Application.Equals(Application, StringComparison.OrdinalIgnoreCase)) &&
+                (!i.IsDone || 
+                 (i.IsDone && !string.IsNullOrWhiteSpace(Notes) && 
+                   i.Notes.Contains(Notes, StringComparison.OrdinalIgnoreCase)))
             ).ToList();
-
-            if (FilterDoneStatus.HasValue)
-            {
-                filteredIssues = filteredIssues.Where(i => i.IsDone == FilterDoneStatus.Value).ToList();
-            }
         
             var issueViewModels = new ObservableCollection<IssueViewModel>();
 
