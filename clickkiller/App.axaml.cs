@@ -15,6 +15,7 @@ using Velopack;
 using Microsoft.Extensions.Logging;
 using System.IO;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO.Pipes;
 
 namespace clickkiller;
 
@@ -22,9 +23,10 @@ public partial class App : Application
 {
     public ILogger Logger { get; set; }
     private WindowIcon? _trayIcon;
-    
     private MainWindow? _mainWindow;
     private static FileStream? _lockFile;
+    private const string PipeName = "ClickKillerPipe";
+    private const string TriggerReportMessage = "TriggerReport";
     public static readonly string appDataPath = GetAppPath();
     private UpdateManager _updateManager;
 
@@ -41,12 +43,19 @@ public partial class App : Application
 
     public override void Initialize()
     {
-        if (IsNotRunning()) {
+        if (IsNotRunning())
+        {
             Logger.LogInformation("Starting app");
             Task.Run(UpdateApp).Wait();
+            _ = Task.Run(StartPipeServer);
             AvaloniaXamlLoader.Load(this);
-        } else {
-            Logger.LogInformation("Exiting now because the app is probably already running.");
+        }
+        else
+        {
+            Logger.LogInformation("App is probably already running.");
+            Logger.LogInformation("Sending message to first instance to trigger report.");
+            Task.Run(SendMessageToFirstInstance).Wait();
+            Logger.LogInformation("Exiting now.");
             Environment.Exit(0);
         }
     }
@@ -211,6 +220,42 @@ public partial class App : Application
 #else
         return false;
 #endif
+    }
+
+    private void StartPipeServer()
+    {
+        Logger.LogInformation("Starting pipe server to listen for messages form other instances");
+        using var server = new NamedPipeServerStream(PipeName);
+        server.WaitForConnection();
+        var reader = new StreamReader(server);
+        while (true)
+        {
+            var message = reader.ReadLine();
+            if (message == null)
+            {
+                Logger.LogInformation("Client disconnected, waiting for a new client connect...");
+                server.Disconnect();
+                server.WaitForConnection();
+                continue;
+            }
+
+            if (message == TriggerReportMessage)
+            {
+                Logger.LogInformation("Received message via pipe, triggering report");
+                TriggerReport();
+            }
+        }
+    }
+    private async Task SendMessageToFirstInstance()
+    {
+        using (var client = new NamedPipeClientStream(PipeName))
+        {
+            await client.ConnectAsync();
+            using (var writer = new StreamWriter(client))
+            {
+                await writer.WriteLineAsync(TriggerReportMessage);
+            }
+        }
     }
 
 }
