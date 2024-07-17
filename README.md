@@ -27,9 +27,6 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 - Linux: [Clickkiller.AppImage](https://storage.googleapis.com/clickkiller/Clickkiller.AppImage)
 - Windows: [Clickkiller-win-stable-Setup.exe](https://storage.googleapis.com/clickkiller/Clickkiller-win-stable-Setup.exe)
 
-
-
-   
 ## FAQ
 - Why not use my TODO App? 
     - If that works for you - keep going! Click Killer is dedicated to software problems. It's a fast way to tap into a community and your backlog is not mixed with all your real work.
@@ -49,6 +46,7 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 dotnet build
 dotnet run
 ./clickkiller.Linux/build-linux.sh 0.0.xx
+./clickkiller.Windows/build-win.sh 0.0.xx
 ``` 
 
 # Goals:
