@@ -33,7 +33,7 @@ public partial class App : Application
     public App()
     {
         Logger = ClickKillerContainer.ServiceProvider.GetRequiredService<ILogger>();
-        _updateManager = new UpdateManager("https://storage.googleapis.com/clickkiller/");
+        _updateManager = new UpdateManager(new Velopack.Sources.GithubSource("https://github.com/janmechtel/clickkiller", null, false));
     }
 
     public static void ExitApplication()

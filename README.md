@@ -24,12 +24,12 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 
 ## Download
 
-- Linux: [Clickkiller.AppImage](https://storage.googleapis.com/clickkiller/Clickkiller.AppImage)
-- Windows: [Clickkiller-win-stable-Setup.exe](https://storage.googleapis.com/clickkiller/Clickkiller-win-stable-Setup.exe)
+- Linux: [Clickkiller.AppImage](https://github.com/janmechtel/clickkiller/releases/latest/download/Clickkiller.AppImage)
+- Windows: [Clickkiller-win-stable-Setup.exe](https://github.com/janmechtel/clickkiller/releases/latest/download/Clickkiller-win-stable-Setup.exe)
 
 ## FAQ
 - Why not use my TODO App? 
-    - If that works for you - keep going! Click Killer is dedicated to software problems. It's a fast way to tap into a community and your backlog is not mixed with all your real work.
+    - If that works for you - keep going!
 - Is it safe to use? 
     - Yes, we only share the data on your screen.
 - Will it slow down my computer? 
@@ -71,3 +71,9 @@ Who are my ideal users?
 - [X] Installer - Velopack
 - [ ] Share issues to a friend
 - [ ] Detect the current app
+
+
+# Ideas
+
+- I want a tree of the workspaces
+- I want an easy way to identify them, probably color based
