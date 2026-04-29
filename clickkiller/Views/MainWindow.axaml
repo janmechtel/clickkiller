@@ -1,0 +1,29 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:clickkiller.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:clickkiller.Views"
+        mc:Ignorable="d"
+        d:DesignWidth="800"
+        d:DesignHeight="450"
+        x:Class="clickkiller.Views.MainWindow"
+        Icon="/Assets/clickkiller.ico"
+        Title="clickkiller"
+        WindowState="Normal"
+        Width="800" Height="600"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <DockPanel>
+            <Menu Name="MainMenu" DockPanel.Dock="Top" IsVisible="False">
+                <MenuItem Header="_File">
+                    <MenuItem Header="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateMenuItemLabel}" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).UpdateCommand}" />
+                    <MenuItem Header="_Exit" Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}" />
+                </MenuItem>
+            </Menu>
+            <views:MainView HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch" />
+        </DockPanel>
+        <Rectangle Name="MenuTrigger" Height="20" VerticalAlignment="Top" Fill="Transparent"/>
+    </Grid>
+</Window>
