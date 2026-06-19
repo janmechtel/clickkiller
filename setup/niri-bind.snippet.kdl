@@ -1,0 +1,7 @@
+# Add this line inside the `binds { ... }` block in
+# ~/.config/niri/dms/binds.kdl
+#
+# The trigger script should be symlinked by setup/install.sh to
+# ~/Applications/clickkiller-trigger.sh
+
+F1 hotkey-overlay-title="Clickkiller Toggle" { spawn "/home/jan/Applications/clickkiller-trigger.sh"; }

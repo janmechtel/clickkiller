@@ -24,6 +24,7 @@ public partial class App : Application
     public ILogger Logger { get; set; }
     private WindowIcon? _trayIcon;
     private MainWindow? _mainWindow;
+    private bool _reportWindowOpen;
     private static FileStream? _lockFile;
     private const string PipeName = "ClickKillerPipe";
     private const string TriggerReportMessage = "TriggerReport";
@@ -101,10 +102,12 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp, updateMenuItemLabel)
+                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp, updateMenuItemLabel),
+                OnHidden = () => _reportWindowOpen = false
             };
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
+            _reportWindowOpen = false;
 
         }
         else
@@ -134,18 +137,45 @@ public partial class App : Application
 
     public void TriggerReport()
     {
-
-        if (_mainWindow != null)
+        if (_mainWindow is null)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
-              {
-                  if (_mainWindow.IsVisible)
-                  {
-                      _mainWindow.Hide();
-                  }
-                  _mainWindow.Show();
-              });
+            Logger.LogWarning("TriggerReport ignored: main window is not initialized");
+            return;
         }
+
+        Dispatcher.UIThread.Post(() =>
+        {
+            try
+            {
+                if (_reportWindowOpen)
+                {
+                    _mainWindow.Hide();
+                    _reportWindowOpen = false;
+                    Logger.LogInformation("ClickKiller window hidden");
+                    return;
+                }
+
+                ShowMainWindow();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, "Failed to toggle ClickKiller window");
+            }
+        });
+    }
+
+    private void ShowMainWindow()
+    {
+        if (_mainWindow is null)
+        {
+            return;
+        }
+
+        _mainWindow.WindowState = WindowState.Normal;
+        _mainWindow.Show();
+        _mainWindow.Activate();
+        _reportWindowOpen = true;
+        Logger.LogInformation("ClickKiller window shown");
     }
 
 

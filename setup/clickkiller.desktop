@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Clickkiller
+Comment=Start Clickkiller on login
+Exec=/home/jan/Applications/clickkiller-run.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true

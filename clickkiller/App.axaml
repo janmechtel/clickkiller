@@ -1,0 +1,22 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:clickkiller"
+             x:Class="clickkiller.App"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml"/>
+        <Style Selector="TextBlock">
+            <Setter Property="FontFamily" Value="Consolas, Menlo, Monaco, 'Courier New', monospace"/>
+        </Style>
+        <Style Selector="TextBox">
+            <Setter Property="FontFamily" Value="Consolas, Menlo, Monaco, 'Courier New', monospace"/>
+        </Style>
+    </Application.Styles>
+</Application>
