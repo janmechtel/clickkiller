@@ -101,7 +101,7 @@ namespace clickkiller.ViewModels
                 : Array.Empty<string>();
 
             var filteredIssues = issues.Where(i => 
-                (string.IsNullOrWhiteSpace(Application) || i.Application.Equals(Application, StringComparison.OrdinalIgnoreCase)) &&
+                (string.IsNullOrWhiteSpace(Application) || i.Application.Contains(Application, StringComparison.OrdinalIgnoreCase)) &&
                 (!i.IsDone || 
                  (i.IsDone && noteWords.Any() && 
                   noteWords.Any(word => i.Notes.Contains(word, StringComparison.OrdinalIgnoreCase))))
