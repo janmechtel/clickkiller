@@ -24,8 +24,8 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 
 ## Download
 
-- Linux: [Clickkiller.AppImage](https://storage.googleapis.com/clickkiller/Clickkiller.AppImage)
-- Windows: [Clickkiller-win-stable-Setup.exe](https://storage.googleapis.com/clickkiller/Clickkiller-win-stable-Setup.exe)
+- Linux: [Clickkiller.AppImage](https://github.com/janmechtel/clickkiller/releases/latest/download/Clickkiller.AppImage)
+- Windows: [Clickkiller-win-stable-Setup.exe](https://github.com/janmechtel/clickkiller/releases/latest/download/Clickkiller-win-stable-Setup.exe)
 
 ## FAQ
 - Why not use my TODO App? 
@@ -45,9 +45,23 @@ The BTTN provides a fast way to get the nuisance out of your head and sidesteps 
 ```
 dotnet build
 dotnet run
-./clickkiller.Linux/build-linux.sh 0.0.xx
-./clickkiller.Windows/build-win.sh 0.0.xx
+bash clickkiller.Linux/build-linux.sh 0.0.xx
+bash clickkiller.Windows/build-win.sh 0.0.xx
 ```
+
+## Publishing a release
+
+Releases are distributed via **GitHub Releases** only (GCS is no longer used).
+
+```bash
+# 1. Build the Linux release
+bash clickkiller.Linux/build-linux.sh 0.0.xx
+
+# 2. Publish to GitHub Releases (get token from: gh auth token)
+vpk upload github --repoUrl https://github.com/janmechtel/clickkiller/ --publish --releaseName "ClickKiller 0.0.xx" --tag v0.0.xx -o releases/ --token <gh-token>
+```
+
+The in-app update check (`UpdateManager`) also points to GitHub, so users will be prompted to update automatically.
 
 ## Local Linux setup (niri / F1 hotkey)
 
