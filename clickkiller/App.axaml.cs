@@ -102,9 +102,14 @@ public partial class App : Application
 
             _mainWindow = new MainWindow
             {
-                DataContext = new MainViewModel(appDataPath, ExitApplication, UpdateApp, updateMenuItemLabel),
                 OnHidden = () => _reportWindowOpen = false
             };
+            _mainWindow.DataContext = new MainViewModel(
+                appDataPath,
+                ExitApplication,
+                UpdateApp,
+                updateMenuItemLabel,
+                _mainWindow.HideReportWindow);
             desktop.MainWindow = _mainWindow;
             _mainWindow.Hide();
             _reportWindowOpen = false;

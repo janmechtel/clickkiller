@@ -13,6 +13,7 @@ namespace clickkiller.ViewModels
     public class MainViewModel : ViewModelBase
     {
         private readonly DatabaseService _databaseService;
+        private readonly Action _hideWindow;
         private string _application = string.Empty;
         private string _notes = string.Empty;
         private ObservableCollection<IssueViewModel> _issues = new ObservableCollection<IssueViewModel>();
@@ -20,6 +21,7 @@ namespace clickkiller.ViewModels
 
         public ICommand ExitCommand { get; }
         public ICommand SaveCommand { get; }
+        public ICommand SaveAndHideCommand { get; }
         public ICommand FocusNotesCommand { get; }
         public ICommand DeleteIssueCommand { get; }
         public ICommand ToggleIssueDoneStatusCommand { get; }
@@ -34,11 +36,13 @@ namespace clickkiller.ViewModels
             set => this.RaiseAndSetIfChanged(ref _updateMenuItemLabel, value);
         }
 
-        public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication, string updateMenuItemLabel)
+        public MainViewModel(string appDataPath, Action exitApplication, Func<Task> updateApplication, string updateMenuItemLabel, Action hideWindow)
         {
             _databaseService = new DatabaseService(appDataPath);
+            _hideWindow = hideWindow;
             ExitCommand = ReactiveCommand.Create(exitApplication);
             SaveCommand = ReactiveCommand.Create(SaveIssue);
+            SaveAndHideCommand = ReactiveCommand.Create(SaveAndHide);
             FocusNotesCommand = ReactiveCommand.Create(() => FocusNotes = true);
             DeleteIssueCommand = ReactiveCommand.Create<IssueViewModel>(DeleteIssue);
             ToggleIssueDoneStatusCommand = ReactiveCommand.Create<IssueViewModel>(ToggleIssueDoneStatus);
@@ -84,12 +88,28 @@ namespace clickkiller.ViewModels
 
         private void SaveIssue()
         {
+            TrySaveIssue();
+        }
+
+        private void SaveAndHide()
+        {
+            if (TrySaveIssue())
+            {
+                _hideWindow();
+            }
+        }
+
+        private bool TrySaveIssue()
+        {
             if (!string.IsNullOrWhiteSpace(Application) && !string.IsNullOrWhiteSpace(Notes))
             {
                 _databaseService.SaveIssue(Application, Notes);
                 Notes = string.Empty;
                 RefreshIssues();
+                return true;
             }
+
+            return false;
         }
 
         private void RefreshIssues()

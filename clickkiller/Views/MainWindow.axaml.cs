@@ -48,11 +48,13 @@ public partial class MainWindow : Window
         // }
     }
 
-    private void HideWindow()
+    public void HideReportWindow()
     {
         Hide();
         OnHidden?.Invoke();
     }
+
+    private void HideWindow() => HideReportWindow();
 
     private void MainWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
     {
