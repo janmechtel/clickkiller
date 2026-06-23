@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using clickkiller.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -40,6 +41,14 @@ namespace clickkiller.Views
 
             viewModel.ToggleIssueDoneStatusCommand.Execute(issue);
             e.Handled = true;
+        }
+
+        private void IssuesDataGrid_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (IssuesDataGrid.SelectedItem is null)
+                return;
+
+            Dispatcher.UIThread.Post(() => IssuesDataGrid.CurrentColumn = null);
         }
     }
 }

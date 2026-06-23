@@ -48,10 +48,12 @@
         <DataGrid Name="IssuesDataGrid"
                   CanUserSortColumns="False"
                   ItemsSource="{Binding Issues}"
+                  SelectedItem="{Binding SelectedIssue, Mode=TwoWay}"
                   AutoGenerateColumns="False"
                   IsReadOnly="True"
                   Grid.Row="2"
-                  VerticalAlignment="Stretch">
+                  VerticalAlignment="Stretch"
+                  SelectionChanged="IssuesDataGrid_SelectionChanged">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.Header>

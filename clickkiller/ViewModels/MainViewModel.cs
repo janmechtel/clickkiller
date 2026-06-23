@@ -1,11 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Linq;
 using ReactiveUI;
 using clickkiller.Data;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace clickkiller.ViewModels
@@ -18,6 +17,7 @@ namespace clickkiller.ViewModels
         private string _notes = string.Empty;
         private ObservableCollection<IssueViewModel> _issues = new ObservableCollection<IssueViewModel>();
         private bool _focusNotes;
+        private IssueViewModel? _selectedIssue;
 
         public ICommand ExitCommand { get; }
         public ICommand SaveCommand { get; }
@@ -54,9 +54,7 @@ namespace clickkiller.ViewModels
             this.WhenAnyValue(x => x.Application, x => x.Notes)
                 .Throttle(TimeSpan.FromMilliseconds(300))
                 .Subscribe(_ => RefreshIssues());
-
         }
-
 
         public bool FocusNotes
         {
@@ -78,6 +76,12 @@ namespace clickkiller.ViewModels
                 this.RaiseAndSetIfChanged(ref _notes, value);
                 RefreshIssues();
             }
+        }
+
+        public IssueViewModel? SelectedIssue
+        {
+            get => _selectedIssue;
+            set => this.RaiseAndSetIfChanged(ref _selectedIssue, value);
         }
 
         public ObservableCollection<IssueViewModel> Issues
@@ -114,43 +118,45 @@ namespace clickkiller.ViewModels
 
         private void RefreshIssues()
         {
+            var selectedIssueId = SelectedIssue?.Id;
+
             var issues = _databaseService.GetAllIssues(Application);
-        
-            var noteWords = !string.IsNullOrWhiteSpace(Notes) 
+
+            var noteWords = !string.IsNullOrWhiteSpace(Notes)
                 ? Notes.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
                 : Array.Empty<string>();
 
-            var filteredIssues = issues.Where(i => 
+            var filteredIssues = issues.Where(i =>
                 (string.IsNullOrWhiteSpace(Application) || i.Application.Contains(Application, StringComparison.OrdinalIgnoreCase)) &&
-                (!i.IsDone || 
-                 (i.IsDone && noteWords.Any() && 
+                (!i.IsDone ||
+                 (i.IsDone && noteWords.Any() &&
                   noteWords.Any(word => i.Notes.Contains(word, StringComparison.OrdinalIgnoreCase))))
             ).ToList();
-        
+
             var issueViewModels = new ObservableCollection<IssueViewModel>();
 
             IOrderedEnumerable<Issue> sortedIssues;
             switch (_sortColumn)
             {
                 case "Application":
-                    sortedIssues = _sortAscending 
-                        ? filteredIssues.OrderBy(i => i.Application) 
+                    sortedIssues = _sortAscending
+                        ? filteredIssues.OrderBy(i => i.Application)
                         : filteredIssues.OrderByDescending(i => i.Application);
                     break;
                 case "Notes":
-                    sortedIssues = _sortAscending 
-                        ? filteredIssues.OrderBy(i => i.Notes) 
+                    sortedIssues = _sortAscending
+                        ? filteredIssues.OrderBy(i => i.Notes)
                         : filteredIssues.OrderByDescending(i => i.Notes);
                     break;
                 case "Count":
-                    sortedIssues = _sortAscending 
-                        ? filteredIssues.OrderBy(i => _databaseService.GetDuplicateCount(i.Id)) 
+                    sortedIssues = _sortAscending
+                        ? filteredIssues.OrderBy(i => _databaseService.GetDuplicateCount(i.Id))
                         : filteredIssues.OrderByDescending(i => _databaseService.GetDuplicateCount(i.Id));
                     break;
                 case "Timestamp":
                 default:
-                    sortedIssues = _sortAscending 
-                        ? filteredIssues.OrderBy(i => i.Timestamp) 
+                    sortedIssues = _sortAscending
+                        ? filteredIssues.OrderBy(i => i.Timestamp)
                         : filteredIssues.OrderByDescending(i => i.Timestamp);
                     break;
             }
@@ -166,6 +172,9 @@ namespace clickkiller.ViewModels
             }
 
             Issues = new ObservableCollection<IssueViewModel>(issueViewModels);
+            SelectedIssue = selectedIssueId.HasValue
+                ? issueViewModels.FirstOrDefault(issue => issue.Id == selectedIssueId.Value)
+                : null;
         }
 
         private void DeleteIssue(IssueViewModel issueViewModel)
@@ -215,6 +224,7 @@ namespace clickkiller.ViewModels
                 _sortColumn = column;
                 _sortAscending = true;
             }
+
             RefreshIssues();
         }
     }
@@ -246,7 +256,6 @@ namespace clickkiller.ViewModels
             IsDuplicate = issue.DuplicateOf.HasValue;
             DuplicateCount = duplicateCount;
             MostRecentTimestamp = mostRecentTimestamp;
-
         }
     }
 }
